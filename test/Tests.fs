@@ -128,3 +128,123 @@ testCase "Declation parser works with whitespace" <| fun test ->
             | other -> test.unexpected other
         | Some other -> test.unexpected other
         | None -> test.failwith "No Match"
+
+testCase "Declation parser works with double qoutes and whitespace" <| fun test ->
+    "  <?xml version=\"1.0\" ?>  "
+    |> parseUsing (withWhitespace declaration)
+    |> function
+        | Some (Declaration dict) -> 
+            match Map.tryFind "version" dict with
+            | Some "1.0" -> test.pass()
+            | other -> test.unexpected other
+        | Some other -> test.unexpected other
+        | None -> test.failwith "No Match"
+
+
+testCase "Node opening parsing works with namespace" <| fun test ->
+    "<ns:h1 height='20px' >"
+    |> parseUsing nodeOpening 
+    |> function 
+        | Some ((Some "ns", "h1"), ["height", "20px"]) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Node opening parsing works without namespace" <| fun test ->
+    "<h1 height='20px' >"
+    |> parseUsing nodeOpening 
+    |> function 
+        | Some ((None, "h1"), ["height", "20px"]) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Node opening parsing works without namespace with whitespace in the beginning" <| fun test ->
+    " <h1 height='20px' >"
+    |> parseUsing nodeOpening 
+    |> function 
+        | Some ((None, "h1"), ["height", "20px"]) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Node opening parsing works without namespace with whitespace at the end" <| fun test ->
+    "<h1 height='20px' > "
+    |> parseUsing nodeOpening 
+    |> function 
+        | Some ((None, "h1"), ["height", "20px"]) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Node closing parsing works with provided namespace and tag and whitespace" <| fun test ->
+    "</html:h1 >"
+    |> parseUsing (nodeClosing (Some "html") "h1")
+    |> function 
+        | Some ((Some "html"), "h1") -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Node closing parsing works with provided namespace and tag with a lot whitespace" <| fun test ->
+    "</html:h1  >"
+    |> parseUsing (nodeClosing (Some "html") "h1")
+    |> function 
+        | Some ((Some "html"), "h1") -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Node closing parsing works with provided namespace and tag without whitespace" <| fun test ->
+    "</html:h1>"
+    |> parseUsing (nodeClosing (Some "html") "h1")
+    |> function 
+        | Some ((Some "html"), "h1") -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+
+testCase "Node closing parsing doesn't yield if provided tag is different" <| fun test ->
+    "</otherNs:h1>"
+    |> parseUsing (nodeClosing (Some "html") "h1")
+    |> function 
+        | None -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+
+testCase "Parsing empty node works" <| fun test ->
+    "<h1></h1>"
+    |> parseUsing emptyNode 
+    |> function 
+        | Some ((None, "h1"), []) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Parsing empty node works with whitespace in the middle" <| fun test ->
+    "<h1>  </h1>"
+    |> parseUsing emptyNode 
+    |> function 
+        | Some ((None, "h1"), []) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+
+testCase "Parsing empty node works with whitespace everywhere" <| fun test ->
+    "  <h1  >  </h1  >  "
+    |> parseUsing emptyNode 
+    |> function 
+        | Some ((None, "h1"), []) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Parsing empty node works with whitespace everywhere and attributes" <| fun test ->
+    "  <h1 height='20px' width=30 >  </h1  >  "
+    |> parseUsing emptyNode 
+    |> function 
+        | Some ((None, "h1"), ["height", "20px"; "width", "30"]) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Parsing empty node works with whitespace everywhere and attributes and namespaces" <| fun test ->
+    "  <html:h1 height='20px' width=30 >  </html:h1  >  "
+    |> parseUsing emptyNode 
+    |> function 
+        | Some ((Some "html", "h1"), ["height", "20px"; "width", "30"]) -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Parsing empty node doesn't yield when namespaces mismatch" <| fun test ->
+    "  <html:h1 height='20px' width=30 >  </other:h1  >  "
+    |> parseUsing emptyNode 
+    |> function 
+        | None -> test.pass()
+        | otherResult -> test.unexpected otherResult
+
+testCase "Parsing empty node doesn't yield when tags mismatch" <| fun test ->
+    "  <html:h1 height='20px' width=30 >  </html:h2>  "
+    |> parseUsing emptyNode 
+    |> function 
+        | None -> test.pass()
+        | otherResult -> test.unexpected otherResult

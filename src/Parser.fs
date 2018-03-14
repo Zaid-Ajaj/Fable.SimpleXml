@@ -167,3 +167,30 @@ module Parser =
             (content)
             (withWhitespace (Parsimmon.str "-->"))
         |> Parsimmon.map (fun (_, body, _) -> body)
+
+    
+    let nodeOpening = 
+        Parsimmon.seq3
+          (withWhitespace openingTagName)
+          (withWhitespace manyAttributes)
+          (withWhitespace (Parsimmon.str ">"))
+        |> Parsimmon.map (fun (tag, attrs, _) -> tag, attrs)
+
+    let nodeClosing ns tagName =
+        let matchingTag = 
+            match ns with
+            | Some ns' -> sprintf "%s:%s" ns' tagName
+            | None -> tagName 
+        Parsimmon.seq3 
+            (Parsimmon.str "</")
+            (withWhitespace (Parsimmon.str matchingTag))
+            (withWhitespace (Parsimmon.str ">")) 
+        |> Parsimmon.map (fun _ -> ns, tagName)
+
+
+    let emptyNode = 
+        nodeOpening
+        |> Parsimmon.bind (fun ((ns, tagName), attrs) -> 
+            withWhitespace (nodeClosing ns tagName)
+            |> Parsimmon.map (fun _ -> (ns, tagName), attrs))
+        |> withWhitespace
