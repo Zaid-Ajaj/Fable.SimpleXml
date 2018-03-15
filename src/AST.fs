@@ -14,5 +14,5 @@ module AST =
 
     type XmlDocument = {
         Declaration : Map<string, string> option 
-        Children : XmlElement list 
+        Root : XmlElement 
     }

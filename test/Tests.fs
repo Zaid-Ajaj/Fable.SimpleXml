@@ -1,7 +1,7 @@
 module Tests
 
 open QUnit
-open Fable.SimpleXml.AST
+open Fable.SimpleXml
 open Fable.SimpleXml.Parser
 open Fable.Parsimmon
 
@@ -349,3 +349,85 @@ testCase "Parsing simple element with any text content" <| fun test ->
             test.isFalse el.SelfClosing 
             test.isTrue (List.isEmpty el.Children) 
             test.isTrue (Map.isEmpty el.Attributes)
+
+testCase "Recursive XML node parsing works" <| fun test ->
+    """
+    <People>
+
+        <Person Id=10 FirstName='John' LastName='Doe' />
+        
+        <Person>
+            <Id>20</Id>
+            <FirstName>Zaid</FirstName>
+            <LastName makeLowerCase=true>Ajaj</LastName>
+        </Person>
+    </People>
+    """
+    |> SimpleXml.tryParseElement 
+    |> function 
+        | None -> test.failwith "No match"
+        | Some people ->
+            test.equal None people.Namespace
+            test.equal "People" people.Name 
+            test.isTrue (Map.isEmpty people.Attributes)
+            test.equal 2 (List.length people.Children)
+            match people.Children with
+            | [ elemJohn; elemZaid ] -> 
+                test.equal None elemJohn.Namespace
+                test.equal "Person" elemJohn.Name
+                test.isTrue elemJohn.SelfClosing
+                test.isTrue (List.isEmpty elemJohn.Children)
+                test.equal "10" (Map.find "Id" elemJohn.Attributes)
+                test.equal "John" (Map.find "FirstName" elemJohn.Attributes)
+                test.equal "Doe" (Map.find "LastName" elemJohn.Attributes)
+
+                test.equal None elemZaid.Namespace
+                test.equal "Person" elemZaid.Name 
+                test.equal true (Map.isEmpty elemZaid.Attributes)
+                test.equal 3 (List.length elemZaid.Children)
+                match elemZaid.Children with 
+                | [ { Name = "Id"; 
+                      Content = "20"; 
+                      Children = [];  
+                      Namespace = None;
+                      Attributes = _
+                      SelfClosing = false  };
+                    { Name = "FirstName"; 
+                      Content = "Zaid"; 
+                      Children = [];  
+                      Namespace = None;
+                      Attributes = _
+                      SelfClosing = false  };
+                    { Name = "LastName"; 
+                      Content = "Ajaj"; 
+                      Children = [];  
+                      Namespace = None;
+                      Attributes = attrs
+                      SelfClosing = false  } ] when Map.toList attrs = [ "makeLowerCase", "true" ] -> test.pass()
+                | other -> test.unexpected other
+
+            | other -> test.unexpected other
+
+
+testCase "Parsing document works" <| fun test -> 
+    """
+    <?xml version='1.0' ?>
+    <People>
+        <Person Id=10 />
+    </People>
+    """
+    |> SimpleXml.tryParseDocument
+    |> function 
+        | None -> test.failwith "No match"
+        | Some document -> test.passWith (sprintf "%A" document)
+
+testCase "Parsing document without xml declaration works" <| fun test -> 
+    """
+    <People>
+        <Person Id=10 />
+    </People>
+    """
+    |> SimpleXml.tryParseDocument
+    |> function 
+        | None -> test.failwith "No match"
+        | Some document -> test.passWith (sprintf "%A" document)

@@ -1,16 +1,18 @@
 namespace Fable.SimpleXml
 
 open Fable.Parsimmon
+open System
 
 module Tuple = 
     let concat (a, b) = String.concat "" [a; b]
+
+#nowarn "40"
 
 module Parser = 
 
     open AST
     let withWhitespace p = 
         Parsimmon.between (Parsimmon.optionalWhitespace) (Parsimmon.optionalWhitespace) p
-
 
     let asciiString =
 
@@ -146,6 +148,7 @@ module Parser =
             (withWhitespace manyAttributes)
             (Parsimmon.str "?>")
         |> Parsimmon.map (fun (_, attrs, _) -> Map.ofList attrs)
+        |> withWhitespace
         
     let selfClosingTag = 
         Parsimmon.seq4
@@ -205,7 +208,7 @@ module Parser =
             |> Seq.toList 
             |> List.map string
 
-        Parsimmon.satisfy (fun token -> List.contains token acceptableChars)
+        Parsimmon.satisfy (fun token -> token <> "<" && token <> ">")
         |> Parsimmon.many
         |> Parsimmon.concat
         
@@ -258,3 +261,45 @@ module Parser =
 
 
         Parsimmon.choose [emptyElementWithText; emptyElement; selfClosingElement]
+
+    let rec xmlElement = Parsimmon.ofLazy <| fun () ->
+        
+        [ simpleXmlElement
+          nodeOpening
+            |> Parsimmon.bind (fun ((ns, tagName), attrs) -> 
+                xmlElement
+                |> Parsimmon.many 
+                |> Parsimmon.map List.ofArray 
+                |> Parsimmon.skip (nodeClosing ns tagName)
+                |> Parsimmon.map (fun children -> 
+                    {
+                       Namespace = ns 
+                       Name = tagName 
+                       Content = ""
+                       Children = children
+                       Attributes = Map.ofList attrs 
+                       SelfClosing = false
+                    }))
+        ]
+        |> List.map withWhitespace
+        |> Parsimmon.choose
+
+    let xmlDocument = 
+        [ declaration
+          |> withWhitespace 
+          |> Parsimmon.bind (fun declAttrs -> 
+             (withWhitespace xmlElement)
+             |> Parsimmon.map (fun root -> 
+                 {
+                     Declaration = Some declAttrs 
+                     Root = root
+                 }))
+          
+          xmlElement
+          |> Parsimmon.map (fun root -> 
+              {
+                  Declaration = None
+                  Root = root
+              })
+        ]    
+        |> Parsimmon.choose 

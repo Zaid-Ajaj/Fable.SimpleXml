@@ -13,6 +13,7 @@
   <ItemGroup>
     <Compile Include="AST.fs" />
     <Compile Include="Parser.fs" />
+    <Compile Include="SimpleXml.fs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="*.fsproj; *.fs;" PackagePath="fable\" />
