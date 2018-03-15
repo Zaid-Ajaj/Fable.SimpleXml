@@ -93,7 +93,16 @@ module Parser =
         |> Parsimmon.concat
 
     let letters = 
-        Parsimmon.letter
+        let acceptableChars = 
+            ['a' .. 'z']
+            |> List.append ['A' .. 'Z']
+            |> List.map string
+            |> String.concat "" 
+            |> (+) "_-"
+            |> Seq.toList 
+            |> List.map string
+
+        Parsimmon.satisfy (fun token -> List.contains token acceptableChars)
         |> Parsimmon.many
         |> Parsimmon.concat
 

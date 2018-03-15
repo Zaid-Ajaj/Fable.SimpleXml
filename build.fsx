@@ -7,6 +7,8 @@ open Fake
 let libPath = "./src"
 let testsPath = "./test"
 
+let samplePath = "./sample"
+
 let platformTool tool winTool =
   let tool = if isUnix then tool else winTool
   tool
@@ -42,7 +44,9 @@ Target "Clean" <| fun _ ->
     [ testsPath </> "bin" 
       testsPath </> "obj" 
       libPath </> "bin"
-      libPath </> "obj" ]
+      libPath </> "obj"
+      samplePath </> "obj"
+      samplePath </> "bin" ]
     |> CleanDirs
 
     cleanBundles()
@@ -90,6 +94,13 @@ Target "RunTests" <| fun _ ->
     run "npm" "run test" "."
     cleanBundles()
 
+
+Target "RunSample" <| fun _ -> 
+    run dotnetCli "fable npm-run sample" "./sample"
+
+"InstallNpmPackages"
+  ==> "RunSample" 
+ 
 "Clean"
   ==> "InstallNpmPackages"
   ==> "RestoreFableTestProject"

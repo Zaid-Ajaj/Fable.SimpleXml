@@ -3,6 +3,7 @@
   "scripts": {
     "build": "webpack -p",
     "start": "webpack-dev-server",
+    "sample": "webpack-dev-server --config webpack.sample.js",
     "test": "node ./node_modules/qunitjs/bin/qunit public/bundle.js"
   },
   "dependencies": {
