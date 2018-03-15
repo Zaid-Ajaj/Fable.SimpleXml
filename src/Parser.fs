@@ -146,7 +146,6 @@ module Parser =
             (withWhitespace manyAttributes)
             (Parsimmon.str "?>")
         |> Parsimmon.map (fun (_, attrs, _) -> Map.ofList attrs)
-        |> Parsimmon.map Declaration
         
     let selfClosingTag = 
         Parsimmon.seq4

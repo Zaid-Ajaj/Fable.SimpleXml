@@ -111,33 +111,30 @@ testCase "Declation parser works" <| fun test ->
     "<?xml version='1.0' ?>"
     |> parseUsing declaration
     |> function
-        | Some (Declaration dict) -> 
+        | Some dict -> 
             match Map.tryFind "version" dict with
             | Some "1.0" -> test.pass()
             | other -> test.unexpected other
-        | Some other -> test.unexpected other
-        | None -> test.failwith "No Match"
+        | other -> test.unexpected other
 
 testCase "Declation parser works with whitespace" <| fun test ->
     "  <?xml version='1.0' ?>  "
     |> parseUsing (withWhitespace declaration)
     |> function
-        | Some (Declaration dict) -> 
+        | Some dict -> 
             match Map.tryFind "version" dict with
             | Some "1.0" -> test.pass()
             | other -> test.unexpected other
-        | Some other -> test.unexpected other
-        | None -> test.failwith "No Match"
+        | other -> test.unexpected other
 
 testCase "Declation parser works with double qoutes and whitespace" <| fun test ->
     "  <?xml version=\"1.0\" ?>  "
     |> parseUsing (withWhitespace declaration)
     |> function
-        | Some (Declaration dict) -> 
+        | Some dict -> 
             match Map.tryFind "version" dict with
             | Some "1.0" -> test.pass()
             | other -> test.unexpected other
-        | Some other -> test.unexpected other
         | None -> test.failwith "No Match"
 
 
@@ -248,3 +245,32 @@ testCase "Parsing empty node doesn't yield when tags mismatch" <| fun test ->
     |> function 
         | None -> test.pass()
         | otherResult -> test.unexpected otherResult
+
+testCase "Parsing simple empty node" <| fun test ->     
+    "<div></div>"
+    |> parseUsing emptyNode 
+    |> function 
+        | Some ((None, "div"), []) -> test.pass()
+        | other -> test.unexpected other
+
+testCase "Parsing many empty nodes works" <| fun test ->
+    "<div></div><h1></h1><ns:hello key='value' ></ns:hello>"
+    |> parseUsing (Parsimmon.many emptyNode)
+    |> function 
+        | Some [| (None, "div"), [] 
+                  (None, "h1"),  []
+                  (Some "ns", "hello"), ["key", "value"] |] -> test.pass()
+        | other -> test.unexpected other
+
+testCase "Parsing many empty nodes with new lines works" <| fun test ->
+    """ 
+    <div></div>
+    <h1></h1>
+    <ns:hello key='value' ></ns:hello>
+    """
+    |> parseUsing (Parsimmon.many emptyNode)
+    |> function 
+        | Some [| (None, "div"), [] 
+                  (None, "h1"),  []
+                  (Some "ns", "hello"), ["key", "value"] |] -> test.pass()
+        | other -> test.unexpected other
