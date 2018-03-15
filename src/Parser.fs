@@ -193,3 +193,68 @@ module Parser =
             withWhitespace (nodeClosing ns tagName)
             |> Parsimmon.map (fun _ -> (ns, tagName), attrs))
         |> withWhitespace
+
+    let textSnippet = 
+        let acceptableChars = 
+            ['a' .. 'z']
+            |> List.append ['A' .. 'Z']
+            |> List.map string
+            |> String.concat "" 
+            |> (+) "0123456789 "
+            |> (+) "-+,,!.@#$%^&*()~[]{}:?;"
+            |> Seq.toList 
+            |> List.map string
+
+        Parsimmon.satisfy (fun token -> List.contains token acceptableChars)
+        |> Parsimmon.many
+        |> Parsimmon.concat
+        
+
+    let emptyNodeWithTextContent = 
+        nodeOpening
+        |> Parsimmon.bind (fun ((ns, tagName), attrs) -> 
+            textSnippet
+            |> Parsimmon.skip (nodeClosing ns tagName)
+            |> Parsimmon.map (fun text -> text, ns, tagName, attrs))
+        |> withWhitespace
+
+
+    let simpleXmlElement =
+        let selfClosingElement = 
+            selfClosingTag
+            |> Parsimmon.map (fun ((ns,tag), attrs) -> 
+                { 
+                    Namespace = ns 
+                    Name = tag 
+                    Attributes = Map.ofList attrs 
+                    Content = ""
+                    Children = [] 
+                    SelfClosing = true
+                })
+
+        let emptyElement = 
+            emptyNode 
+            |> Parsimmon.map (fun ((ns, name), attrs) -> 
+                {
+                    Namespace = ns
+                    Name = name
+                    Attributes = Map.ofList attrs
+                    Content = ""
+                    Children = []
+                    SelfClosing = false
+                })
+
+        let emptyElementWithText = 
+            emptyNodeWithTextContent
+            |> Parsimmon.map (fun (content, ns, name, attrs) ->
+                {
+                    Namespace = ns
+                    Name = name
+                    Attributes = Map.ofList attrs
+                    Content = content
+                    Children = []
+                    SelfClosing = false
+                })
+
+
+        Parsimmon.choose [emptyElementWithText; emptyElement; selfClosingElement]

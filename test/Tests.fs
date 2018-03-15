@@ -262,6 +262,25 @@ testCase "Parsing many empty nodes works" <| fun test ->
                   (Some "ns", "hello"), ["key", "value"] |] -> test.pass()
         | other -> test.unexpected other
 
+
+
+testCase "Chars content works" <| fun test -> 
+    [ "2.0"
+      "text"
+      "Text Content"
+      "Some 2.0"
+      "Some more text"
+      "[]{},.!@#$%^&*()" ]
+    |> List.choose (parseUsing textSnippet) 
+    |> function 
+        | [ "2.0"
+            "text"
+            "Text Content"
+            "Some 2.0"
+            "Some more text" 
+            "[]{},.!@#$%^&*()"] -> test.pass()
+        | other -> test.unexpected other
+
 testCase "Parsing many empty nodes with new lines works" <| fun test ->
     """ 
     <div></div>
@@ -274,3 +293,59 @@ testCase "Parsing many empty nodes with new lines works" <| fun test ->
                   (None, "h1"),  []
                   (Some "ns", "hello"), ["key", "value"] |] -> test.pass()
         | other -> test.unexpected other
+
+testCase "Parsing empty node with text works" <| fun test -> 
+    [ "<div>hello</div>"
+      "<ns:div>hello</ns:div>"
+      "<p style='color:red'>Hello there</p>"
+      "<span > Hello there </span>" ]
+    |> List.choose (parseUsing emptyNodeWithTextContent) 
+    |> function 
+        | [ ("hello", None, "div", [])
+            ("hello", Some "ns", "div", [])
+            ("Hello there", None, "p", ["style", "color:red"])
+            ("Hello there ", None, "span", []) ] -> 
+            test.pass()
+        | other -> test.unexpected other
+
+testCase "Parsing simple element works" <| fun test -> 
+    "<ns:div class='main' async=true>Text Content</ns:div>"
+    |> parseUsing simpleXmlElement
+    |> function 
+        | None -> test.failwith "No match"
+        | Some el -> 
+            test.equal (Some "ns") el.Namespace
+            test.equal "div" el.Name 
+            test.equal false el.SelfClosing 
+            test.equal "Text Content" el.Content
+            test.isTrue (List.isEmpty el.Children) 
+            test.equal "main" (Map.find "class" el.Attributes)
+            test.equal "true" (Map.find "async" el.Attributes)
+
+testCase "Parsing simple selfclosing element works" <| fun test -> 
+    "<Person Id=20 FirstName='John' LastName='Doe' />"
+    |> parseUsing simpleXmlElement
+    |> function 
+        | None -> test.failwith "No match"
+        | Some el -> 
+            test.equal None el.Namespace
+            test.equal "Person" el.Name 
+            test.isTrue el.SelfClosing 
+            test.equal "" el.Content
+            test.isTrue (List.isEmpty el.Children) 
+            test.equal "20" (Map.find "Id" el.Attributes)
+            test.equal "John" (Map.find "FirstName" el.Attributes)
+            test.equal "Doe" (Map.find "LastName" el.Attributes)
+            
+testCase "Parsing simple element with any text content" <| fun test -> 
+    "<Version>2.0</Version>"
+    |> parseUsing simpleXmlElement
+    |> function 
+        | None -> test.failwith "No match"
+        | Some el -> 
+            test.equal None el.Namespace
+            test.equal "Version" el.Name 
+            test.equal "2.0" el.Content
+            test.isFalse el.SelfClosing 
+            test.isTrue (List.isEmpty el.Children) 
+            test.isTrue (Map.isEmpty el.Attributes)
