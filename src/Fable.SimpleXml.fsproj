@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>A pleasant library for easily working with Xml in Fable projects</Description>
+    <Description>A library for easily working with Xml in Fable projects</Description>
     <PackageProjectUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml.git</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml/blob/master/LICENSE</PackageLicenseUrl>

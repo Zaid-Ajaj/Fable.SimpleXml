@@ -11,9 +11,16 @@ let getValue (x: obj) : string = jsNative
 [<Emit("$0.value = $1")>]
 let setValue (x: obj) (y: string) : unit = jsNative
 
-let one = document.getElementById "one"
-
+let sampleZero = "<Book Title='Lord of the Rings' Pages=500 ISBN=\"263468624687\" />"
 let sampleOne = 
+    """<Person>
+    <Id>20</Id>
+    <FirstName>John</FirstName>
+    <LastName>Doe</LastName>
+    <Married>true</Married>
+</Person>
+    """
+let sampleTwo = 
     """<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -28,10 +35,10 @@ let sampleOne =
 </Project>
     """
 
-let sampleTwo = 
+let sampleThree = 
     """<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>A pleasant library for easily working with Xml in Fable projects</Description>
+    <Description>A library for easily working with Xml in Fable projects</Description>
     <PackageProjectUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml.git</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml/blob/master/LICENSE</PackageLicenseUrl>
@@ -54,7 +61,7 @@ let sampleTwo =
 </Project>
     """
 
-let sampleThree = 
+let sampleFour = 
     """<?xml version="1.0" encoding="UTF-8"?>
 <breakfast_menu>
   <food>
@@ -93,23 +100,31 @@ let sampleThree =
 let parseElem = document.getElementById "parseElem"
 let parseDoc = document.getElementById "parseDoc"
 
-
+let zero = document.getElementById "zero"
+let one = document.getElementById "one"
 let two = document.getElementById "two"
 let three = document.getElementById "three"
+let four = document.getElementById "four"
+
 let input = document.getElementById "input"
 let output = document.getElementById "output" 
 
 
+zero.addEventListener("click", unbox (fun ev -> 
+   setValue input sampleZero)) 
+
 one.addEventListener("click", unbox (fun ev -> 
    setValue input sampleOne)) 
-
 
 two.addEventListener("click", unbox (fun ev -> 
    setValue input sampleTwo)) 
  
 three.addEventListener("click", unbox (fun ev -> 
    setValue input sampleThree)) 
- 
+
+four.addEventListener("click", unbox (fun ev -> 
+   setValue input sampleFour)) 
+
 parseElem.addEventListener("click", unbox (fun ev -> 
    match SimpleXml.tryParseElement (getValue input) with 
    | Some el -> setValue output (sprintf "%A" el)
