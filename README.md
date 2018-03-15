@@ -1,6 +1,9 @@
 # Fable.SimpleXml
 
-A library for parsing and working with XML data in Fable projects. 
+A pleasant library for with Xml data in Fable projects. 
+
+
+
 
 Running the watching the tests live 
 ```sh

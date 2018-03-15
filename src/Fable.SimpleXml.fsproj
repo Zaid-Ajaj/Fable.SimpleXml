@@ -1,14 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Fable Library</Description>
-    <PackageProjectUrl></PackageProjectUrl>
-    <RepositoryUrl></RepositoryUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
+    <Description>A pleasant library for easily working with Xml in Fable projects</Description>
+    <PackageProjectUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml.git</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml/blob/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl></PackageIconUrl>
     <PackageTags>fsharp;fable</PackageTags>
-    <Authors></Authors>
-    <Version></Version>
+    <Authors>Zaid Ajaj</Authors>
+    <Version>1.0</Version>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AST.fs" />
