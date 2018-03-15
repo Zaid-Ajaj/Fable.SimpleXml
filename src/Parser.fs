@@ -82,6 +82,7 @@ module Parser =
     let attributKey = 
        [ Parsimmon.letter
          Parsimmon.str "-"
+         Parsimmon.str ":"
          Parsimmon.str "_" ]
        |> Parsimmon.choose 
        |> Parsimmon.many 

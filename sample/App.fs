@@ -97,6 +97,9 @@ let sampleFour =
 </breakfast_menu>
     """
 
+[<Emit("JSON.stringify($0, null, 4) + ''")>]
+let anyToString (_: obj) : string= jsNative
+
 let parseElem = document.getElementById "parseElem"
 let parseDoc = document.getElementById "parseDoc"
 
