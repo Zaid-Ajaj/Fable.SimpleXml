@@ -166,19 +166,21 @@ module Parser =
             manyAttributes
             (Parsimmon.optionalWhitespace |> Parsimmon.chain (Parsimmon.str "/>"))
         |> Parsimmon.map (fun (tagName,_, attrs, _) -> tagName, attrs)
-        
-    let comment = 
-        let content = 
-            letters
-            |> Parsimmon.seperateBy (Parsimmon.str " ")
-            |> Parsimmon.map (String.concat " ")
+       
+    let textSnippet = 
+        let acceptableChars = 
+            ['a' .. 'z']
+            |> List.append ['A' .. 'Z']
+            |> List.map string
+            |> String.concat "" 
+            |> (+) "0123456789 "
+            |> (+) "-+,,!.@#$%^&*()~[]{}:?;"
+            |> Seq.toList 
+            |> List.map string
 
-        Parsimmon.seq3
-            (withWhitespace (Parsimmon.str "<!--"))
-            (content)
-            (withWhitespace (Parsimmon.str "-->"))
-        |> Parsimmon.map (fun (_, body, _) -> body)
-
+        Parsimmon.satisfy (fun token -> token <> "<" && token <> ">")
+        |> Parsimmon.many
+        |> Parsimmon.concat
     
     let nodeOpening = 
         Parsimmon.seq3
@@ -206,20 +208,7 @@ module Parser =
             |> Parsimmon.map (fun _ -> (ns, tagName), attrs))
         |> withWhitespace
 
-    let textSnippet = 
-        let acceptableChars = 
-            ['a' .. 'z']
-            |> List.append ['A' .. 'Z']
-            |> List.map string
-            |> String.concat "" 
-            |> (+) "0123456789 "
-            |> (+) "-+,,!.@#$%^&*()~[]{}:?;"
-            |> Seq.toList 
-            |> List.map string
 
-        Parsimmon.satisfy (fun token -> token <> "<" && token <> ">")
-        |> Parsimmon.many
-        |> Parsimmon.concat
         
 
     let emptyNodeWithTextContent = 

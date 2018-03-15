@@ -4,10 +4,16 @@
     "build": "webpack -p",
     "start": "webpack-dev-server",
     "sample": "webpack-dev-server --config webpack.sample.js",
-    "test": "node ./node_modules/qunitjs/bin/qunit public/bundle.js"
+    "publish-sample": "webpack -p --config webpack.sample.js && npm run publish",
+    "test": "node ./node_modules/qunitjs/bin/qunit public/bundle.js",
+    "publish": "node publish.js"
+  },
+  "repository": {
+    "url": "https://github.com/Zaid-Ajaj/Fable.SimpleXml.git"
   },
   "dependencies": {
-    "babel-runtime": "6.23.0"
+    "babel-runtime": "6.23.0",
+    "gh-pages": "^1.1.0"
   },
   "devDependencies": {
     "babel-core": "6.25.0",

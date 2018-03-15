@@ -39,11 +39,14 @@ type XmlElement = {
     Children : XmlElement list 
     SelfClosing : bool
 }
+
 type XmlDocument = {
     Declaration : Map<string, string> option 
     Root : XmlElement 
 }
 ```
+
+
 
 Running the watching the tests live 
 ```sh

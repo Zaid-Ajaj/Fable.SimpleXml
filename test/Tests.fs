@@ -77,28 +77,6 @@ testCase "Parsing self-closing tag works with identfiers" <| fun test ->
          | Some ((Some "html", "h2"), ["height","200px"]) -> test.pass()
          | otherResult -> test.unexpected otherResult 
 
-testCase "Parsing comment works: empty" <| fun test ->
-    "<!--  -->"
-    |> parseUsing comment
-    |> function 
-        | Some "" -> test.pass()
-        | otherResult -> test.unexpected otherResult 
-
-testCase "Parsing comment works: one word" <| fun test ->
-    "<!-- this -->"
-    |> parseUsing comment
-    |> function 
-        | Some "this " -> test.pass()
-        | otherResult -> test.unexpected otherResult 
-
-testCase "Parsing comment works: sentence" <| fun test ->
-    "<!-- this is a comment -->"
-    |> parseUsing comment
-    |> function 
-        | Some "this is a comment " -> test.pass()
-        | None -> test.failwith "No match"
-        | otherResult -> test.unexpected otherResult 
-
 testCase "Parsing tag with namespace works" <| fun test ->
     "ns:tag"
     |> parseUsing tagName
