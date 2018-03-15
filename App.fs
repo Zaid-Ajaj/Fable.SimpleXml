@@ -14,46 +14,44 @@ let setValue (x: obj) (y: string) : unit = jsNative
 let one = document.getElementById "one"
 
 let sampleOne = 
-    """
-    <Project Sdk="Microsoft.NET.Sdk">
-      <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-      </PropertyGroup>
-      <ItemGroup>
-        <Compile Include="App.fs" />
-      </ItemGroup>
-      <ItemGroup>
-        <ProjectReference Include="..\src\Fable.SimpleXml.fsproj" />
-      </ItemGroup>
-      <Import Project="..\.paket\Paket.Restore.targets" />
-    </Project>
+    """<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="App.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\Fable.SimpleXml.fsproj" />
+  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>
     """
 
 let sampleTwo = 
-    """
-    <Project Sdk="Microsoft.NET.Sdk">
-      <PropertyGroup>
-        <Description>A pleasant library for easily working with Xml in Fable projects</Description>
-        <PackageProjectUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml.git</RepositoryUrl>
-        <PackageLicenseUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml/blob/master/LICENSE</PackageLicenseUrl>
-        <PackageIconUrl></PackageIconUrl>
-        <PackageTags>fsharp;fable</PackageTags>
-        <Authors>Zaid Ajaj</Authors>
-        <Version>1.0</Version>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-      </PropertyGroup>
-      <ItemGroup>
-        <Compile Include="AST.fs" />
-        <Compile Include="Parser.fs" />
-        <Compile Include="SimpleXml.fs" />
-      </ItemGroup>
-      <ItemGroup>
-        <Content Include="*.fsproj; *.fs;" PackagePath="fable\" />
-      </ItemGroup>
-      <Import Project="..\.paket\Paket.Restore.targets" />
-    </Project>
+    """<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>A pleasant library for easily working with Xml in Fable projects</Description>
+    <PackageProjectUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml.git</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/Zaid-Ajaj/Fable.SimpleXml/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageTags>fsharp;fable</PackageTags>
+    <Authors>Zaid Ajaj</Authors>
+    <Version>1.0</Version>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AST.fs" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="SimpleXml.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="*.fsproj; *.fs;" PackagePath="fable\" />
+  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>
     """
 
 let sampleThree = 
@@ -91,13 +89,13 @@ let sampleThree =
   </food>
 </breakfast_menu>
     """
+
 let parseElem = document.getElementById "parseElem"
 let parseDoc = document.getElementById "parseDoc"
 
 
 let two = document.getElementById "two"
 let three = document.getElementById "three"
-let four = document.getElementById "four"
 let input = document.getElementById "input"
 let output = document.getElementById "output" 
 
