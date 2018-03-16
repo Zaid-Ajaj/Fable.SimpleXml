@@ -40,6 +40,7 @@ type XmlElement = {
     Content : string 
     Children : XmlElement list 
     SelfClosing : bool
+    IsTextNode : bool
 }
 
 type XmlDocument = {
@@ -49,13 +50,16 @@ type XmlDocument = {
 ```
 
 
+### Known Issues
+ - Parsing Comments doens't work
+ - Attributes must be on the same line
 
-Running the watching the tests live 
+### Running the tests live 
 ```sh
-bash build.sh RunLiveTests 
+./build.sh RunLiveTests 
 ```
-Building the tests and running QUnut cli runner
+### Building the tests and running QUnut cli runner
 ```sh
-bash build.sh RunTests
+./build.sh RunTests
 ```
 or just `Ctrl + Shift + B` to run the cli tests as a VS Code task
