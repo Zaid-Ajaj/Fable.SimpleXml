@@ -96,6 +96,7 @@ Target "RunTests" <| fun _ ->
 
 
 Target "RunSample" <| fun _ -> 
+    run dotnetCli "restore" "./sample"
     run dotnetCli "fable npm-run sample" "./sample"
 
 "InstallNpmPackages"
