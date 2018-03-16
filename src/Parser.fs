@@ -168,16 +168,6 @@ module Parser =
         |> Parsimmon.map (fun (tagName, attrs, _) -> tagName, attrs)
 
     let textSnippet =
-        let acceptableChars =
-            ['a' .. 'z']
-            |> List.append ['A' .. 'Z']
-            |> List.map string
-            |> String.concat ""
-            |> (+) "0123456789 "
-            |> (+) "-+,,!.@#$%^&*()~[]{}:?;"
-            |> Seq.toList
-            |> List.map string
-
         Parsimmon.satisfy (fun token -> token <> "<" && token <> ">")
         |> Parsimmon.atLeastOneOrMany
         |> Parsimmon.concat

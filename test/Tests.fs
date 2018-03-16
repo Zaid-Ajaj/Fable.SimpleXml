@@ -293,11 +293,14 @@ testCase "Parsing empty node with text works" <| fun test ->
       "<span > Hello there </span>" ]
     |> List.choose (parseUsing emptyNodeWithTextContent)
     |> function
-        | [ ("hello", None, "div", [])
-            ("hello", Some "ns", "div", [])
-            ("Hello there", None, "p", ["style", "color:red"])
-            ("Hello there ", None, "span", []) ] ->
-            test.pass()
+        | [ (value1, None, "div", [])
+            (value2, Some "ns", "div", [])
+            (value3, None, "p", ["style", "color:red"])
+            (value4, None, "span", []) ] ->
+            test.equal "hello" value1
+            test.equal "hello" value2
+            test.equal "Hello there" value3
+            test.equal " Hello there " value4
         | other -> test.unexpected other
 
 testCase "Parsing simple element works" <| fun test ->
@@ -315,18 +318,45 @@ testCase "Parsing simple element works" <| fun test ->
             test.equal "true" (Map.find "async" el.Attributes)
 
 
-//testCase "Parsing mixed nodes: text then node" <| fun test ->
-//    "hello <other></other> "
-//    |> parseUsing mixedNodes
-//    |> function
-//        | None -> test.failwith "No match"
-//        | Some node -> test.passWith (sprintf "%A" node)
+testCase "Parsing mixed nodes: text then node" <| fun test ->
+   "hello <other></other> "
+   |> parseUsing mixedNodes
+   |> function
+       | None -> test.failwith "No match"
+       | Some node ->
+            test.equal "hello " node.[0].Content
+
+testCase "Parsing mixed nodes: node then text" <| fun test ->
+   "<other></other> hello "
+   |> parseUsing mixedNodes
+   |> function
+       | None -> test.failwith "No match"
+       | Some node ->
+            test.equal " hello " node.[1].Content
+
+testCase "Parsing mixed nodes: self-closing node then text" <| fun test ->
+   "<other/> hello "
+   |> parseUsing mixedNodes
+   |> function
+       | None -> test.failwith "No match"
+       | Some node ->
+            test.equal " hello " node.[1].Content
+
+testCase "Parsing mixed nodes: text then self-closing node" <| fun test ->
+   " hello <other/>"
+   |> parseUsing mixedNodes
+   |> function
+       | None -> test.failwith "No match"
+       | Some node ->
+            test.equal " hello " node.[0].Content
+
 testCase "Parsing text node works" <| fun test ->
     "hello "
     |> parseUsing textNode
     |> function
         | None -> test.failwith "No match"
-        | Some el -> test.passWith (sprintf "%A" el)
+        | Some el ->
+            test.equal "hello " el.Content
 
 testCase "Parsing text node works with one letter" <| fun test ->
     "h"
@@ -496,3 +526,25 @@ testCase "Parsing document without xml declaration works" <| fun test ->
     |> function
         | None -> test.failwith "No match"
         | Some document -> test.passWith (sprintf "%A" document)
+
+testCase "Parsing element with text keep text meaningful whitespaces" <| fun test ->
+    """<div class="container">
+    <div class="notification">
+        This container is <strong>centered</strong> on desktop.
+    </div>
+</div>"""
+    |> SimpleXml.tryParseElement
+    |> function
+        | None -> test.failwith "No match"
+        | Some container ->
+            match container.Children with
+            | [ notification ] ->
+                match notification.Children with
+                | [ text1; strong; text2 ] ->
+                    test.equal "        This container is " text1.Content
+                    test.equal "centered" strong.Content
+                    test.equal " on desktop.\n    " text2.Content
+                | other ->
+                    test.unexpected other
+            | other ->
+                test.unexpected other
