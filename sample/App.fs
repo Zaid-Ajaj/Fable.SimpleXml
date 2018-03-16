@@ -97,8 +97,8 @@ let sampleFour =
 </breakfast_menu>
     """
 
-[<Emit("JSON.stringify($0, null, 4) + ''")>]
-let anyToString (_: obj) : string= jsNative
+[<Emit("JSON.stringify(JSON.parse($0), null, 4)")>]
+let beautify (input: string) : string = jsNative
 
 let parseElem = document.getElementById "parseElem"
 let parseDoc = document.getElementById "parseDoc"
@@ -130,12 +130,12 @@ four.addEventListener("click", unbox (fun ev ->
 
 parseElem.addEventListener("click", unbox (fun ev -> 
    match SimpleXml.tryParseElement (getValue input) with 
-   | Some el -> setValue output (sprintf "%A" el)
+   | Some el -> setValue output (beautify (sprintf "%A" el))
    | None -> setValue output "Could not parse input XML as an element, if there is a declaration element <?xml ... ?>, then try parsing as a document"
 ))
 
 parseDoc.addEventListener("click", unbox (fun ev -> 
    match SimpleXml.tryParseDocument (getValue input) with 
-   | Some el -> setValue output (sprintf "%A" el)
+   | Some el -> setValue output (beautify (sprintf "%A" el))
    | None -> setValue output "Could not parse input XML as a document"
 ))
