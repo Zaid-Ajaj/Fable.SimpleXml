@@ -58,7 +58,7 @@ type XmlDocument = {
 ```sh
 ./build.sh RunLiveTests 
 ```
-### Building the tests and running QUnut cli runner
+### Building the tests and running QUnit cli runner
 ```sh
 ./build.sh RunTests
 ```
