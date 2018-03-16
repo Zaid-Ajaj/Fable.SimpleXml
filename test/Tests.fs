@@ -307,6 +307,76 @@ testCase "Parsing simple element works" <| fun test ->
             test.equal "main" (Map.find "class" el.Attributes)
             test.equal "true" (Map.find "async" el.Attributes)
 
+
+//testCase "Parsing mixed nodes: text then node" <| fun test ->
+//    "hello <other></other> " 
+//    |> parseUsing mixedNodes
+//    |> function 
+//        | None -> test.failwith "No match"
+//        | Some node -> test.passWith (sprintf "%A" node)
+testCase "Parsing text node works" <| fun test ->
+    "hello "
+    |> parseUsing textNode 
+    |> function 
+        | None -> test.failwith "No match"
+        | Some el -> test.passWith (sprintf "%A" el)
+
+testCase "Parsing text node works with one letter" <| fun test ->
+    "h"
+    |> parseUsing textNode 
+    |> function 
+        | None -> test.failwith "No match"
+        | Some el -> test.passWith (sprintf "%A" el)
+
+testCase "Parsing many text nodes works" <| fun test ->
+    "hello "
+    |> parseUsing (Parsimmon.atLeastOneOrMany textNode) 
+    |> function 
+        | None -> test.failwith "No match"
+        | Some el -> test.passWith (sprintf "%A" el)
+
+testCase "mixedNode parser works on simple xml element" <| fun test ->
+    "<h1></h1>"
+    |> parseUsing mixedNodes 
+    |> function 
+        | None -> test.failwith "No match"
+        | Some node -> test.passWith (sprintf "%A" node)
+
+testCase "mixedNode parser works on many simple xml elements" <| fun test ->
+    "<h1></h1> <other></other>"
+    |> parseUsing mixedNodes 
+    |> function 
+        | None -> test.failwith "No match"
+        | Some node -> test.passWith (sprintf "%A" node)
+
+
+testCase "Parsing mixed nodes: text then node then text" <| fun test ->
+    "hello <other></other> there" 
+    |> parseUsing mixedNodes
+    |> function 
+        | None -> test.failwith "No match"
+        | Some node -> test.passWith (sprintf "%A" node)
+
+testCase "Parsing mixed nodes: text then node then node" <| fun test ->
+    "hello <node /> <other></other>" 
+    |> parseUsing mixedNodes
+    |> function 
+        | None -> test.failwith "No match"
+        | Some node -> test.passWith (sprintf "%A" node)
+
+
+testCase "Parsing mixed nodes works inside simple xml element" <| fun test ->
+    """<div class="container">
+  <div class="notification">
+    This container is <strong>centered</strong> on desktop.
+    </div>
+</div>
+    """
+    |> parseUsing simpleXmlElement
+    |> function 
+       | None -> test.failwith "No match"
+       | Some node -> test.passWith (sprintf "%A" node)
+
 testCase "Parsing simple selfclosing element works" <| fun test -> 
     "<Person Id=20 FirstName='John' LastName='Doe' />"
     |> parseUsing simpleXmlElement
@@ -375,19 +445,22 @@ testCase "Recursive XML node parsing works" <| fun test ->
                       Content = "20"; 
                       Children = [];  
                       Namespace = None;
-                      Attributes = _
+                      Attributes = _;
+                      IsTextNode = false
                       SelfClosing = false  };
                     { Name = "FirstName"; 
                       Content = "Zaid"; 
                       Children = [];  
                       Namespace = None;
-                      Attributes = _
+                      Attributes = _;
+                      IsTextNode = false;
                       SelfClosing = false  };
                     { Name = "LastName"; 
                       Content = "Ajaj"; 
                       Children = [];  
                       Namespace = None;
-                      Attributes = attrs
+                      Attributes = attrs;
+                      IsTextNode = false;
                       SelfClosing = false  } ] when Map.toList attrs = [ "makeLowerCase", "true" ] -> test.pass()
                 | other -> test.unexpected other
 

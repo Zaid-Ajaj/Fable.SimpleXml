@@ -180,7 +180,7 @@ module Parser =
             |> List.map string
 
         Parsimmon.satisfy (fun token -> token <> "<" && token <> ">")
-        |> Parsimmon.many
+        |> Parsimmon.atLeastOneOrMany
         |> Parsimmon.concat
     
     let nodeOpening = 
@@ -209,9 +209,6 @@ module Parser =
             |> Parsimmon.map (fun _ -> (ns, tagName), attrs))
         |> withWhitespace
 
-
-        
-
     let emptyNodeWithTextContent = 
         nodeOpening
         |> Parsimmon.bind (fun ((ns, tagName), attrs) -> 
@@ -220,8 +217,22 @@ module Parser =
             |> Parsimmon.map (fun text -> text, ns, tagName, attrs))
         |> withWhitespace
 
+    let textNode = 
+        textSnippet
+        |> Parsimmon.map (fun content -> 
+            {
+                Namespace = None
+                Name = ""
+                Attributes = Map.empty
+                Content = content
+                Children = []
+                SelfClosing = false
+                IsTextNode = true
+            })
 
-    let simpleXmlElement =
+
+    let rec simpleXmlElement = Parsimmon.ofLazy <| fun () ->
+
         let selfClosingElement = 
             selfClosingTag
             |> Parsimmon.map (fun ((ns,tag), attrs) -> 
@@ -232,6 +243,7 @@ module Parser =
                     Content = ""
                     Children = [] 
                     SelfClosing = true
+                    IsTextNode = false
                 })
 
         let emptyElement = 
@@ -244,6 +256,7 @@ module Parser =
                     Content = ""
                     Children = []
                     SelfClosing = false
+                    IsTextNode = false
                 })
 
         let emptyElementWithText = 
@@ -256,11 +269,39 @@ module Parser =
                     Content = content
                     Children = []
                     SelfClosing = false
+                    IsTextNode = false
                 })
 
+        let mixedNodes = 
+            nodeOpening 
+            |> Parsimmon.bind (fun ((ns, tag), attrs) ->  
+                [ simpleXmlElement; textNode ]
+                |> Parsimmon.choose
+                |> Parsimmon.atLeastOneOrMany
+                |> Parsimmon.skip (nodeClosing ns tag)
+                |> Parsimmon.map (fun children -> 
+                    {
+                        Namespace = ns
+                        Name = tag
+                        Attributes = Map.ofList attrs
+                        Content = ""
+                        Children = List.ofArray children
+                        SelfClosing = false
+                        IsTextNode = false
+                    }))
+     
+        [ emptyElementWithText; 
+          emptyElement; 
+          selfClosingElement; 
+          mixedNodes ]
+        |> Parsimmon.choose 
 
-        Parsimmon.choose [emptyElementWithText; emptyElement; selfClosingElement]
 
+    let mixedNodes = 
+        [ simpleXmlElement; textNode ]
+        |> Parsimmon.choose 
+        |> Parsimmon.atLeastOneOrMany
+     
     let rec xmlElement = Parsimmon.ofLazy <| fun () ->
         
         [ simpleXmlElement
@@ -278,6 +319,7 @@ module Parser =
                        Children = children
                        Attributes = Map.ofList attrs 
                        SelfClosing = false
+                       IsTextNode = false
                     }))
         ]
         |> List.map withWhitespace

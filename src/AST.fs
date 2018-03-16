@@ -10,6 +10,7 @@ module AST =
         Content : string 
         Children : XmlElement list 
         SelfClosing : bool
+        IsTextNode : bool
     }
 
     type XmlDocument = {
