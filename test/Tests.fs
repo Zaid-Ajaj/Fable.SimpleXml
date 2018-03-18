@@ -512,25 +512,3 @@ testCase "Parsing element with text keep text meaningful whitespaces" <| fun tes
                     test.unexpected other
             | other ->
                 test.unexpected other
-
-testCase "Parsing element with text keep text meaningful whitespaces" <| fun test ->
-    """<div class="container">
-    <div class="notification">
-        This container is <strong>centered</strong> on desktop.
-    </div>
-</div>"""
-    |> SimpleXml.tryParseElement
-    |> function
-        | None -> test.failwith "No match"
-        | Some container ->
-            match container.Children with
-            | [ notification ] ->
-                match notification.Children with
-                | [ text1; strong; text2 ] ->
-                    test.equal "        This container is " text1.Content
-                    test.equal "centered" strong.Content
-                    test.equal " on desktop.\n    " text2.Content
-                | other ->
-                    test.unexpected other
-            | other ->
-                test.unexpected other
