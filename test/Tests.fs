@@ -4,6 +4,7 @@ open QUnit
 open Fable.SimpleXml
 open Fable.SimpleXml.Parser
 open Fable.Parsimmon
+open Fable
 
 registerModule "SimpleXml Tests"
 
@@ -144,19 +145,6 @@ testCase "Node opening parsing works without namespace" <| fun test ->
         | Some ((None, "h1"), ["height", "20px"]) -> test.pass()
         | otherResult -> test.unexpected otherResult
 
-testCase "Node opening parsing works without namespace with whitespace in the beginning" <| fun test ->
-    " <h1 height='20px' >"
-    |> parseUsing nodeOpening
-    |> function
-        | Some ((None, "h1"), ["height", "20px"]) -> test.pass()
-        | otherResult -> test.unexpected otherResult
-
-testCase "Node opening parsing works without namespace with whitespace at the end" <| fun test ->
-    "<h1 height='20px' > "
-    |> parseUsing nodeOpening
-    |> function
-        | Some ((None, "h1"), ["height", "20px"]) -> test.pass()
-        | otherResult -> test.unexpected otherResult
 
 testCase "Node closing parsing works with provided namespace and tag and whitespace" <| fun test ->
     "</html:h1 >"
@@ -203,22 +191,15 @@ testCase "Parsing empty node works with whitespace in the middle" <| fun test ->
         | otherResult -> test.unexpected otherResult
 
 
-testCase "Parsing empty node works with whitespace everywhere" <| fun test ->
-    "  <h1  >  </h1  >  "
-    |> parseUsing emptyNode
-    |> function
-        | Some ((None, "h1"), []) -> test.pass()
-        | otherResult -> test.unexpected otherResult
-
-testCase "Parsing empty node works with whitespace everywhere and attributes" <| fun test ->
-    "  <h1 height='20px' width=30 >  </h1  >  "
+testCase "Parsing empty node works with attributes" <| fun test ->
+    "<h1 height='20px' width=30 >  </h1 >"
     |> parseUsing emptyNode
     |> function
         | Some ((None, "h1"), ["height", "20px"; "width", "30"]) -> test.pass()
         | otherResult -> test.unexpected otherResult
 
-testCase "Parsing empty node works with whitespace everywhere and attributes and namespaces" <| fun test ->
-    "  <html:h1 height='20px' width=30 >  </html:h1  >  "
+testCase "Parsing empty node works with attributes and namespaces" <| fun test ->
+    "<html:h1 height='20px' width=30 >  </html:h1  >"
     |> parseUsing emptyNode
     |> function
         | Some ((Some "html", "h1"), ["height", "20px"; "width", "30"]) -> test.pass()
@@ -273,18 +254,7 @@ testCase "Chars content works" <| fun test ->
             "[]{},.!@#$%^&*()"] -> test.pass()
         | other -> test.unexpected other
 
-testCase "Parsing many empty nodes with new lines works" <| fun test ->
-    """
-    <div></div>
-    <h1></h1>
-    <ns:hello key='value' ></ns:hello>
-    """
-    |> parseUsing (Parsimmon.many emptyNode)
-    |> function
-        | Some [| (None, "div"), []
-                  (None, "h1"),  []
-                  (Some "ns", "hello"), ["key", "value"] |] -> test.pass()
-        | other -> test.unexpected other
+
 
 testCase "Parsing empty node with text works" <| fun test ->
     [ "<div>hello</div>"
@@ -319,36 +289,43 @@ testCase "Parsing simple element works" <| fun test ->
 
 
 testCase "Parsing mixed nodes: text then node" <| fun test ->
-   "hello <other></other> "
-   |> parseUsing mixedNodes
+   "<root>hello <other></other></root>"
+   |> parseUsing xmlElement
    |> function
        | None -> test.failwith "No match"
        | Some node ->
-            test.equal "hello " node.[0].Content
+            let firstTextNode = List.head node.Children
+            test.areEqual "hello " firstTextNode.Content
 
 testCase "Parsing mixed nodes: node then text" <| fun test ->
-   "<other></other> hello "
-   |> parseUsing mixedNodes
+   "<root><other></other> hello </root>"
+   |> parseUsing xmlElement
    |> function
        | None -> test.failwith "No match"
        | Some node ->
-            test.equal " hello " node.[1].Content
+            match node.Children with
+            | [ other; hello ] -> test.areEqual " hello " hello.Content
+            | otherwise -> test.unexpected otherwise
 
 testCase "Parsing mixed nodes: self-closing node then text" <| fun test ->
-   "<other/> hello "
-   |> parseUsing mixedNodes
+   "<root><other/> hello </root>"
+   |> parseUsing xmlElement
    |> function
        | None -> test.failwith "No match"
        | Some node ->
-            test.equal " hello " node.[1].Content
+            match node.Children with
+            | [ other; hello ] -> test.areEqual " hello " hello.Content
+            | otherwise -> test.unexpected otherwise
 
 testCase "Parsing mixed nodes: text then self-closing node" <| fun test ->
-   " hello <other/>"
-   |> parseUsing mixedNodes
+   "<root> hello <other/></root>"
+   |> parseUsing xmlElement
    |> function
        | None -> test.failwith "No match"
        | Some node ->
-            test.equal " hello " node.[0].Content
+            match node.Children.Head.Content with
+            | " hello " -> test.pass()
+            | _ -> test.unexpected node
 
 testCase "Parsing text node works" <| fun test ->
     "hello "
@@ -372,31 +349,31 @@ testCase "Parsing many text nodes works" <| fun test ->
         | None -> test.failwith "No match"
         | Some el -> test.passWith (sprintf "%A" el)
 
-testCase "mixedNode parser works on simple xml element" <| fun test ->
-    "<h1></h1>"
-    |> parseUsing mixedNodes
-    |> function
-        | None -> test.failwith "No match"
-        | Some node -> test.passWith (sprintf "%A" node)
 
 testCase "mixedNode parser works on many simple xml elements" <| fun test ->
-    "<h1></h1> <other></other>"
-    |> parseUsing mixedNodes
+    "<root><h1></h1> <other></other></root>"
+    |> parseUsing xmlElement
     |> function
         | None -> test.failwith "No match"
         | Some node -> test.passWith (sprintf "%A" node)
 
 
 testCase "Parsing mixed nodes: text then node then text" <| fun test ->
-    "hello <other></other> there"
-    |> parseUsing mixedNodes
+    "<root>hello <other></other> there</root>"
+    |> parseUsing xmlElement
     |> function
         | None -> test.failwith "No match"
-        | Some node -> test.passWith (sprintf "%A" node)
+        | Some node -> 
+            match node.Children with 
+            | [ first; middle; second ] -> 
+                test.areEqual "other" middle.Name
+                test.areEqual "hello " first.Content 
+                test.areEqual " there" second.Content
+            | other -> test.unexpected other
 
-testCase "Parsing mixed nodes: text then node then node" <| fun test ->
-    "hello <node /> <other></other>"
-    |> parseUsing mixedNodes
+testCase "Parsing mixed nodes: text then self-closing node then node" <| fun test ->
+    "<root>hello <node /> <other></other></root>"
+    |> parseUsing xmlElement
     |> function
         | None -> test.failwith "No match"
         | Some node -> test.passWith (sprintf "%A" node)
@@ -409,7 +386,7 @@ testCase "Parsing mixed nodes works inside simple xml element" <| fun test ->
     </div>
 </div>
     """
-    |> parseUsing simpleXmlElement
+    |> parseUsing xmlElement
     |> function
        | None -> test.failwith "No match"
        | Some node -> test.passWith (sprintf "%A" node)
@@ -462,45 +439,36 @@ testCase "Recursive XML node parsing works" <| fun test ->
             test.equal None people.Namespace
             test.equal "People" people.Name
             test.isTrue (Map.isEmpty people.Attributes)
-            test.equal 2 (List.length people.Children)
-            match people.Children with
+            test.areEqual 2 (List.length (SimpleXml.findElementsByName "Person" people))
+            let peopleChildren = people.Children |> List.filter (fun el -> not el.IsTextNode)
+            test.equal 2 (List.length peopleChildren)
+            match List.filter (fun el -> not el.IsTextNode) people.Children with
             | [ elemJohn; elemZaid ] ->
-                test.equal None elemJohn.Namespace
-                test.equal "Person" elemJohn.Name
+                test.areEqual None elemJohn.Namespace
+                test.areEqual "Person" elemJohn.Name
                 test.isTrue elemJohn.SelfClosing
                 test.isTrue (List.isEmpty elemJohn.Children)
-                test.equal "10" (Map.find "Id" elemJohn.Attributes)
-                test.equal "John" (Map.find "FirstName" elemJohn.Attributes)
-                test.equal "Doe" (Map.find "LastName" elemJohn.Attributes)
+                test.areEqual "10" (Map.find "Id" elemJohn.Attributes)
+                test.areEqual "John" (Map.find "FirstName" elemJohn.Attributes)
+                test.areEqual "Doe" (Map.find "LastName" elemJohn.Attributes)
 
-                test.equal None elemZaid.Namespace
-                test.equal "Person" elemZaid.Name
-                test.equal true (Map.isEmpty elemZaid.Attributes)
-                test.equal 3 (List.length elemZaid.Children)
-                match elemZaid.Children with
-                | [ { Name = "Id";
-                      Content = "20";
-                      Children = [];
-                      Namespace = None;
-                      Attributes = _;
-                      IsTextNode = false
-                      SelfClosing = false  };
-                    { Name = "FirstName";
-                      Content = "Zaid";
-                      Children = [];
-                      Namespace = None;
-                      Attributes = _;
-                      IsTextNode = false;
-                      SelfClosing = false  };
-                    { Name = "LastName";
-                      Content = "Ajaj";
-                      Children = [];
-                      Namespace = None;
-                      Attributes = attrs;
-                      IsTextNode = false;
-                      SelfClosing = false  } ] when Map.toList attrs = [ "makeLowerCase", "true" ] -> test.pass()
-                | other -> test.unexpected other
-
+                test.areEqual None elemZaid.Namespace
+                test.areEqual "Person" elemZaid.Name
+                test.areEqual true (Map.isEmpty elemZaid.Attributes)
+                let nonTextNodes = List.filter (fun el -> not el.IsTextNode) elemZaid.Children
+                test.areEqual 3 (List.length nonTextNodes)
+               
+                [ SimpleXml.findElementByName "Id" elemZaid
+                  SimpleXml.findElementByName "FirstName" elemZaid
+                  SimpleXml.findElementByName "LastName" elemZaid ] 
+                |> List.map (fun el -> el.Content)
+                |> function 
+                     | [ "20"; "Zaid";"Ajaj" ] -> 
+                        match SimpleXml.tryFindElementByName "LastName" elemZaid with 
+                        | Some lastName -> 
+                            test.areEqual "true" (Map.find "makeLowerCase" lastName.Attributes)
+                        | None -> test.failwith "Should not happen"
+                     | other -> test.unexpected other                
             | other -> test.unexpected other
 
 
@@ -526,6 +494,24 @@ testCase "Parsing document without xml declaration works" <| fun test ->
     |> function
         | None -> test.failwith "No match"
         | Some document -> test.passWith (sprintf "%A" document)
+
+testCase "Parsing element with text keep text meaningful whitespaces" <| fun test ->
+    """<div class="container"><div class="notification">This container is <strong>centered</strong> on desktop.</div></div>"""
+    |> SimpleXml.tryParseElement
+    |> function
+        | None -> test.failwith "No match"
+        | Some container ->
+            match container.Children with
+            | [ notification ] ->
+                match notification.Children with
+                | [ textBefore; strong; textAfter ] ->
+                    test.equal "This container is " textBefore.Content
+                    test.equal "centered" strong.Content
+                    test.equal " on desktop." textAfter.Content
+                | other ->
+                    test.unexpected other
+            | other ->
+                test.unexpected other
 
 testCase "Parsing element with text keep text meaningful whitespaces" <| fun test ->
     """<div class="container">

@@ -173,30 +173,33 @@ module Parser =
         |> Parsimmon.concat
 
     let nodeOpening =
-        Parsimmon.seq3
-          (withWhitespace openingTagName)
+        Parsimmon.seq2
+          openingTagName
           (withWhitespace manyAttributes)
-          (withWhitespace (Parsimmon.str ">"))
-        |> Parsimmon.map (fun (tag, attrs, _) -> tag, attrs)
+        |> Parsimmon.bind (fun (tag, attrs) -> 
+            Parsimmon.str ">"
+            |> Parsimmon.map (fun (_) -> tag, attrs))
 
     let nodeClosing ns tagName =
         let matchingTag =
             match ns with
             | Some ns' -> sprintf "%s:%s" ns' tagName
             | None -> tagName
-        Parsimmon.seq3
+        Parsimmon.seq2
             (Parsimmon.str "</")
-            (withWhitespace (Parsimmon.str matchingTag))
-            (withWhitespace (Parsimmon.str ">"))
+            (Parsimmon.str matchingTag)
+        |> Parsimmon.chain Parsimmon.optionalWhitespace
+        |> Parsimmon.chain (Parsimmon.str ">")
         |> Parsimmon.map (fun _ -> ns, tagName)
 
 
     let emptyNode =
         nodeOpening
         |> Parsimmon.bind (fun ((ns, tagName), attrs) ->
-            withWhitespace (nodeClosing ns tagName)
+            Parsimmon.optionalWhitespace
+            |> Parsimmon.chain (nodeClosing ns tagName)
             |> Parsimmon.map (fun _ -> (ns, tagName), attrs))
-        |> withWhitespace
+
 
     let emptyNodeWithTextContent =
         nodeOpening
@@ -204,7 +207,6 @@ module Parser =
             textSnippet
             |> Parsimmon.skip (nodeClosing ns tagName)
             |> Parsimmon.map (fun text -> text, ns, tagName, attrs))
-        |> withWhitespace
 
     let textNode =
         textSnippet
@@ -284,12 +286,6 @@ module Parser =
           selfClosingElement;
           mixedNodes ]
         |> Parsimmon.choose
-
-
-    let mixedNodes =
-        [ simpleXmlElement; textNode ]
-        |> Parsimmon.choose
-        |> Parsimmon.atLeastOneOrMany
 
     let rec xmlElement = Parsimmon.ofLazy <| fun () ->
 

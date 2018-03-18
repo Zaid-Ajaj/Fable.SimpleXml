@@ -25,10 +25,18 @@ Fable.SimpleXml
 
 The whole API is the following:
 ```fs
+// Parsing functions 
 SimpleXml.tryParseElement : string -> Option<XmlElement>
 SimpleXml.parseElement : string -> XmlElement
 SimpleXml.tryParseDocument : string -> Option<XmlDocument>
 SimpleXml.parseDocument : string -> XmlDocument
+
+// Search functions
+SimpleXml.findElementsBy : (XmlElement -> bool) -> XmlElement -> XmlElement list
+SimpleXml.findElementsByName : string -> XmlElement -> XmlElement list
+SimpleXml.findElementsByExactAttributes : Map<string, string> -> XmlElement -> XmlElement list
+SimpleXml.tryFindElementByName : string -> XmlElement -> Option<XmlElement>
+SimpleXml.findElementByName : string -> XmlElement -> XmlElement
 ```
 
 Where `XmlElement` and `XmlDocument` are defined as follows:
