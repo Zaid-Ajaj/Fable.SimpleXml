@@ -35,6 +35,7 @@ SimpleXml.parseDocument : string -> XmlDocument
 SimpleXml.findElementsBy : (XmlElement -> bool) -> XmlElement -> XmlElement list
 SimpleXml.findElementsByName : string -> XmlElement -> XmlElement list
 SimpleXml.findElementsByExactAttributes : Map<string, string> -> XmlElement -> XmlElement list
+SimpleXml.findElementByAttribute : string -> string -> XmlElement -> XmlElement list
 SimpleXml.tryFindElementByName : string -> XmlElement -> Option<XmlElement>
 SimpleXml.findElementByName : string -> XmlElement -> XmlElement
 ```
