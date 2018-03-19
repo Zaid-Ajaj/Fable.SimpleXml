@@ -512,3 +512,56 @@ testCase "Parsing element with text keep text meaningful whitespaces" <| fun tes
                     test.unexpected other
             | other ->
                 test.unexpected other
+
+testCase "SimpleXml.parseManyElements works" <| fun test ->
+    "<Person Name='John' />
+     <Person Name='Jane' />
+     <Person Name='Doe' />"
+    |> SimpleXml.parseManyElements
+    |> List.filter (fun el -> not el.IsTextNode)
+    |> List.map (fun el -> Map.find "Name" el.Attributes)
+    |> function 
+        | [ "John"; "Jane"; "Doe" ] -> test.pass()
+        | otherwise -> test.unexpected otherwise
+
+testCase "SimpleXml use case" <| fun test ->
+    "<People>
+        <Person>John</Person>
+        <Person>Jane</Person>
+    </People>"
+    |> SimpleXml.parseElementNonStrict
+    |> SimpleXml.children
+    |> List.map SimpleXml.content 
+    |> test.areEqual [ "John"; "Jane" ]
+
+testCase "SimpleXml.parseNonStrict excludes dummy whitespace" <| fun test ->
+    "<People>
+        <Person Id=10>John</Person>
+        <Person Id=20>Jane</Person>
+    </People>"
+    |> SimpleXml.parseElementNonStrict
+    |> SimpleXml.children
+    |> List.map (fun el -> int (Map.find "Id" el.Attributes), el.Content ) 
+    |> test.areEqual [ (10, "John"); (20, "Jane") ]  
+
+
+type Person = { Id : int; Name: string }
+
+let createPerson id name = 
+    { Id = id; Name = name }
+
+testCase "Parsing people works" <| fun test ->
+    """
+    <People>
+        <Person Id=1 Name='John' />
+        <Person Id='2' Name="Jane" />
+    </People>
+    """
+    |> SimpleXml.parseElement
+    |> SimpleXml.findElementsByName "Person"
+    |> List.map (fun elem -> 
+        let id = int (Map.find "Id" elem.Attributes)
+        let name = Map.find "Name" elem.Attributes 
+        createPerson id name)
+    |> test.areEqual [{ Id = 1; Name = "John" };  
+                      { Id = 2; Name = "Jane" }]  
