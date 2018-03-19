@@ -16,5 +16,6 @@ ghPages.publish("sample", {
         console.log("Finished publishing succesfully");
     } else {
         console.log("Error occured while publishing :(");
+        console.log(e);
     }
 });

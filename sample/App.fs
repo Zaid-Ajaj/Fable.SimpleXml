@@ -103,6 +103,10 @@ let beautify (input: string) : string = jsNative
 let parseElem = document.getElementById "parseElem"
 let parseDoc = document.getElementById "parseDoc"
 
+let parseElemNonStrict = document.getElementById "parseElemNonStrict"
+let parseDocNonStrict = document.getElementById "parseDocNonStrict"
+
+
 let zero = document.getElementById "zero"
 let one = document.getElementById "one"
 let two = document.getElementById "two"
@@ -136,6 +140,18 @@ parseElem.addEventListener("click", unbox (fun ev ->
 
 parseDoc.addEventListener("click", unbox (fun ev -> 
    match SimpleXml.tryParseDocument (getValue input) with 
+   | Some el -> setValue output (beautify (sprintf "%A" el))
+   | None -> setValue output "Could not parse input XML as a document"
+))
+
+parseElemNonStrict.addEventListener("click", unbox (fun _ -> 
+   match SimpleXml.tryParseElementNonStrict (getValue input) with 
+   | Some el -> setValue output (beautify (sprintf "%A" el))
+   | None -> setValue output "Could not parse input XML as an element, if there is a declaration element <?xml ... ?>, then try parsing as a document"
+))
+
+parseDocNonStrict.addEventListener("click", unbox (fun _ -> 
+   match SimpleXml.tryParseDocumentNonStrict (getValue input) with 
    | Some el -> setValue output (beautify (sprintf "%A" el))
    | None -> setValue output "Could not parse input XML as a document"
 ))
