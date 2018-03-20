@@ -11,6 +11,7 @@ module AST =
         Children : XmlElement list 
         SelfClosing : bool
         IsTextNode : bool
+        IsComment : bool
     }
 
     type XmlDocument = {

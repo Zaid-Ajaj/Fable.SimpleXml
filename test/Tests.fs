@@ -565,3 +565,27 @@ testCase "Parsing people works" <| fun test ->
         createPerson id name)
     |> test.areEqual [{ Id = 1; Name = "John" };  
                       { Id = 2; Name = "Jane" }]  
+
+
+testCase "Parsing empty comments works" <| fun test ->
+    [ "<!---->"
+      "<!-- -->"
+      "<!--hello there-->"
+      "<!-- hello there -->"
+      "<!-- <other /> -->"
+      "<!-- \n\n -->" ]
+    |> List.choose (parseUsing comment)
+    |> test.areEqual [ "" ; " "; "hello there"; " hello there "; " <other /> "; " \n\n " ]
+
+testCase "Parsing XML with comments works" <| fun test ->
+    "<Hello>
+        <!--Just commenting here xD-->
+        <!-- Another comment -->
+        <There><!-- and another--></There>
+    </Hello>"
+    |> SimpleXml.parseElement
+    |> SimpleXml.findElementsBy (fun el -> el.IsComment)
+    |> List.map SimpleXml.content
+    |> test.areEqual [ "Just commenting here xD"
+                       " Another comment " 
+                       " and another" ]

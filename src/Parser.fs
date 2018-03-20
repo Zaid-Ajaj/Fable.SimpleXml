@@ -172,6 +172,29 @@ module Parser =
         |> Parsimmon.atLeastOneOrMany
         |> Parsimmon.concat
 
+    let comment = 
+        let emptyComment = 
+            Parsimmon.str "<!---->"
+            |> Parsimmon.map (fun _ -> "")
+
+        let commentWithWhitespace = 
+            Parsimmon.seq3 
+                (Parsimmon.str "<!--")
+                (Parsimmon.optionalWhitespace)
+                (Parsimmon.str "-->")
+            |> Parsimmon.map (fun (_,b,_) -> b)
+
+        let nonEmptyComment =  
+            Parsimmon.seq3 
+                (Parsimmon.str "<!--")
+                (Parsimmon.satisfy (fun c -> c <> "-") 
+                |> Parsimmon.many 
+                |> Parsimmon.concat)
+                (Parsimmon.str "-->")
+            |> Parsimmon.map (fun (_,text,_) -> text)
+
+        Parsimmon.choose [emptyComment; commentWithWhitespace; nonEmptyComment]
+
     let nodeOpening =
         Parsimmon.seq2
           openingTagName
@@ -219,6 +242,7 @@ module Parser =
                 Children = []
                 SelfClosing = false
                 IsTextNode = true
+                IsComment = false
             })
 
 
@@ -235,6 +259,7 @@ module Parser =
                     Children = []
                     SelfClosing = true
                     IsTextNode = false
+                    IsComment = false
                 })
 
         let emptyElement =
@@ -248,8 +273,23 @@ module Parser =
                     Children = []
                     SelfClosing = false
                     IsTextNode = false
+                    IsComment = false
                 })
 
+        let commentNode = 
+            comment 
+            |> Parsimmon.map (fun text -> 
+                {
+                    Namespace = None
+                    Name = ""
+                    Attributes = Map.empty
+                    Content = text
+                    Children = []
+                    SelfClosing = false
+                    IsTextNode = false
+                    IsComment = true
+                })
+                
         let emptyElementWithText =
             emptyNodeWithTextContent
             |> Parsimmon.map (fun (content, ns, name, attrs) ->
@@ -261,6 +301,7 @@ module Parser =
                     Children = []
                     SelfClosing = false
                     IsTextNode = false
+                    IsComment = false
                 })
 
         let mixedNodes =
@@ -279,9 +320,11 @@ module Parser =
                         Children = List.ofArray children
                         SelfClosing = false
                         IsTextNode = false
+                        IsComment = false
                     }))
 
-        [ emptyElementWithText;
+        [ commentNode
+          emptyElementWithText;
           emptyElement;
           selfClosingElement;
           mixedNodes ]
@@ -305,6 +348,7 @@ module Parser =
                        Attributes = Map.ofList attrs
                        SelfClosing = false
                        IsTextNode = false
+                       IsComment = false
                     }))
         ]
         |> List.map withWhitespace

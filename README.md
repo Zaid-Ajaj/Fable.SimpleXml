@@ -87,6 +87,7 @@ type XmlElement = {
     Children : XmlElement list 
     SelfClosing : bool
     IsTextNode : bool
+    IsComment : bool
 }
 
 type XmlDocument = {
@@ -97,7 +98,6 @@ type XmlDocument = {
 
 
 ### Known Issues
- - Parsing Comments doens't work
  - Attributes must be on the same line
 
 ### Running the tests live 
