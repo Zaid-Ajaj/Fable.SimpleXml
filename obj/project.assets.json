@@ -429,11 +429,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/zaid-ajaj/projects/fable-simple-xml/sample/Sample.fsproj",
+      "projectUniqueName": "/media/zaid-ajaj/Windows/Projects/simple-xml/sample/Sample.fsproj",
       "projectName": "Sample",
-      "projectPath": "/home/zaid-ajaj/projects/fable-simple-xml/sample/Sample.fsproj",
+      "projectPath": "/media/zaid-ajaj/Windows/Projects/simple-xml/sample/Sample.fsproj",
       "packagesPath": "/home/zaid-ajaj/.nuget/packages/",
-      "outputPath": "/home/zaid-ajaj/projects/fable-simple-xml/sample/obj/",
+      "outputPath": "/media/zaid-ajaj/Windows/Projects/simple-xml/sample/obj/",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "/usr/share/dotnet/sdk/NuGetFallbackFolder"
@@ -450,8 +450,8 @@
       "frameworks": {
         "netstandard2.0": {
           "projectReferences": {
-            "/home/zaid-ajaj/projects/fable-simple-xml/src/Fable.SimpleXml.fsproj": {
-              "projectPath": "/home/zaid-ajaj/projects/fable-simple-xml/src/Fable.SimpleXml.fsproj"
+            "/media/zaid-ajaj/Windows/Projects/simple-xml/src/Fable.SimpleXml.fsproj": {
+              "projectPath": "/media/zaid-ajaj/Windows/Projects/simple-xml/src/Fable.SimpleXml.fsproj"
             }
           }
         }
