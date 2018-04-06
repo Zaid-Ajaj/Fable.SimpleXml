@@ -195,6 +195,29 @@ module Parser =
 
         Parsimmon.choose [emptyComment; commentWithWhitespace; nonEmptyComment]
 
+    let cdataNode = 
+        let emptyCData = 
+            Parsimmon.str "<![CDATA[]]>"
+            |> Parsimmon.map (fun _ -> "")
+
+        let cdataWithWhitespace = 
+            Parsimmon.seq3 
+                (Parsimmon.str "<![CDATA[")
+                (Parsimmon.optionalWhitespace)
+                (Parsimmon.str "]]>")
+            |> Parsimmon.map (fun (_,b,_) -> b)
+
+        let nonEmptyCDataNode =  
+            Parsimmon.seq3 
+                (Parsimmon.str "<![CDATA[")
+                (Parsimmon.satisfy (fun c -> c <> "]") 
+                |> Parsimmon.many 
+                |> Parsimmon.concat)
+                (Parsimmon.str "]]>")
+            |> Parsimmon.map (fun (_,text,_) -> text)
+
+        Parsimmon.choose [emptyCData; cdataWithWhitespace; nonEmptyCDataNode]
+
     let nodeOpening =
         Parsimmon.seq2
           openingTagName
@@ -245,6 +268,19 @@ module Parser =
                 IsComment = false
             })
 
+    let cdata =
+        cdataNode
+        |> Parsimmon.map (fun content ->
+            {
+                Namespace = None
+                Name = ""
+                Attributes = Map.empty
+                Content = content
+                Children = []
+                SelfClosing = false
+                IsTextNode = true
+                IsComment = false
+            })
 
     let rec simpleXmlElement = Parsimmon.ofLazy <| fun () ->
 
@@ -307,7 +343,7 @@ module Parser =
         let mixedNodes =
             nodeOpening
             |> Parsimmon.bind (fun ((ns, tag), attrs) ->
-                [ simpleXmlElement; textNode ]
+                [ simpleXmlElement; textNode; cdata ]
                 |> Parsimmon.choose
                 |> Parsimmon.atLeastOneOrMany
                 |> Parsimmon.skip (nodeClosing ns tag)
@@ -327,6 +363,7 @@ module Parser =
           emptyElementWithText;
           emptyElement;
           selfClosingElement;
+          cdata;
           mixedNodes ]
         |> Parsimmon.choose
 

@@ -235,7 +235,13 @@ testCase "Parsing many empty nodes works" <| fun test ->
                   (Some "ns", "hello"), ["key", "value"] |] -> test.pass()
         | other -> test.unexpected other
 
-
+testCase "CData node parsing works" <| fun test ->
+    ["<![CDATA[]]>"
+     "<![CDATA[ this is some content ]]>"]
+    |> List.choose (parseUsing cdataNode)
+    |> function 
+        | ["";" this is some content "] -> test.pass() 
+        | other -> test.unexpected other 
 
 testCase "Chars content works" <| fun test ->
     [ "2.0"
@@ -576,6 +582,13 @@ testCase "Parsing empty comments works" <| fun test ->
       "<!-- \n\n -->" ]
     |> List.choose (parseUsing comment)
     |> test.areEqual [ "" ; " "; "hello there"; " hello there "; " <other /> "; " \n\n " ]
+
+testCase "Parsing cdata nodes inside xml node works" <| fun test ->
+    "<div>Hello <![CDATA[THERE]]></div>"
+    |> SimpleXml.parseElement
+    |> SimpleXml.findElementsBy SimpleXml.isTextNode
+    |> List.map SimpleXml.content
+    |> test.areEqual ["Hello "; "THERE"]
 
 testCase "Parsing XML with comments works" <| fun test ->
     "<Hello>

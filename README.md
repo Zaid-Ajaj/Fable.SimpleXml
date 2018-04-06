@@ -96,8 +96,9 @@ type XmlDocument = {
 }
 ```
 
-
 ### Known Issues
+ - Comments cannot contaon `-` 
+ - CDATA nodes cannot contain `]`
  - Attributes must be on the same line
 
 ### Running the tests live 

@@ -99,9 +99,10 @@ Target "RunSample" <| fun _ ->
     run dotnetCli "restore" "./sample"
     run dotnetCli "fable npm-run sample" "./sample"
 
-"InstallNpmPackages"
+"Clean"
+  ==> "InstallNpmPackages"
   ==> "RunSample" 
- 
+
 "Clean"
   ==> "InstallNpmPackages"
   ==> "RestoreFableTestProject"
