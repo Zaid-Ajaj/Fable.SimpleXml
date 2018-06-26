@@ -4,7 +4,7 @@
     "build": "webpack -p",
     "start": "webpack-dev-server",
     "sample": "webpack-dev-server --config webpack.sample.js",
-    "publish-sample": "webpack -p --config webpack.sample.js && node publish.js",
+    "build-sample": "webpack -p --config webpack.sample.js",
     "test": "node ./node_modules/qunitjs/bin/qunit public/bundle.js"
   },
   "repository": {
