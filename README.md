@@ -99,8 +99,11 @@ type XmlDocument = {
 ### Known Issues
  - Comments cannot contaon `-` 
  - CDATA nodes cannot contain `]`
- - Attributes must be on the same line
 
+### Running sample app locally
+```sh
+./build.sh RunSample
+```
 ### Running the tests live 
 ```sh
 ./build.sh RunLiveTests 

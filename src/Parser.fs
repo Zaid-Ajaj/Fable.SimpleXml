@@ -129,7 +129,7 @@ module Parser =
 
     let manyAttributes =
         attribute
-        |> Parsimmon.seperateBy (Parsimmon.str " ")
+        |> Parsimmon.seperateBy Parsimmon.whitespace
         |> withWhitespace
         |> Parsimmon.map List.ofArray
 
