@@ -102,13 +102,17 @@ Target "RunSample" <| fun _ ->
     run dotnetCli "restore" "./sample"
     run dotnetCli "fable npm-run sample" "./sample"
 
-Target "BuildSample" <| fun _ -> 
+Target "CompileSample" <| fun _ -> 
     run dotnetCli "restore" "./sample"
     run dotnetCli "fable npm-run build-sample --port free" "./sample"
 
 "Clean"
   ==> "InstallNpmPackages"
   ==> "RunSample" 
+
+"Clean"
+  ==> "InstallNpmPackages"
+  ==> "CompileSample" 
 
 "Clean"
   ==> "InstallNpmPackages"
