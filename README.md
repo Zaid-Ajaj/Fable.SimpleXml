@@ -6,8 +6,8 @@ A simple library for parsing Xml strings into structured Xml data. Works in brow
 
 | Fable version | Package |
 | ------------- | ------------- |
-| 1.3+  |  [![Nuget](https://img.shields.io/nuget/v/Fable.SimpleXml.svg?style=for-the-badge&?maxAge=0&colorB=green)](https://www.nuget.org/packages/Fable.SimpleXml)  |
-| 2.0-beta  | [![Nuget](https://img.shields.io/nuget/vpre/Fable.SimpleXml.svg?style=for-the-badge&?maxAge=0&colorB=green)](https://www.nuget.org/packages/Fable.SimpleXml)   |
+| 1.3.x  |  [![Nuget](https://img.shields.io/nuget/v/Fable.SimpleXml.svg?maxAge=0&colorB=green)](https://www.nuget.org/packages/Fable.SimpleXml)  |
+| 2.0-beta  | [![Nuget](https://img.shields.io/nuget/vpre/Fable.SimpleXml.svg?maxAge=0&colorB=green)](https://www.nuget.org/packages/Fable.SimpleXml)   |
 
 ### See the library in action in the [Test page](https://zaid-ajaj.github.io/Fable.SimpleXml/)
 
