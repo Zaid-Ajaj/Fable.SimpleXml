@@ -6,6 +6,7 @@ group Main
     nuget Fable.Core prerelease
     nuget Fable.Parsimmon prerelease
     nuget Fable.Import.Browser prerelease
+    nuget Fable.SimpleJson prerelease
     clitool dotnet-fable prerelease
 
 group Build

@@ -20,10 +20,10 @@ module.exports = function (evn, argv) {
    entry: './sample/Sample.fsproj',
    output: {
      filename: 'bundle.js',
-     path: path.join(__dirname, './public'),
+     path: path.join(__dirname, './sample'),
    },
    devServer: {
-     contentBase: './public',
+     contentBase: './sample',
      port: 8080
    },
    module: {

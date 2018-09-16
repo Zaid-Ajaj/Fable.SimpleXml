@@ -103,6 +103,8 @@ type XmlDocument = {
 ### Running sample app locally
 ```sh
 ./build.sh RunSample
+#or 
+build RunSample
 ```
 ### Running the tests live 
 ```sh

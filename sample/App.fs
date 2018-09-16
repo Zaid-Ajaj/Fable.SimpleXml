@@ -4,6 +4,7 @@ open Fable.SimpleXml
 open Fable
 open Fable.Core
 open Fable.Import.Browser
+open Fable.SimpleJson 
 
 [<Emit("$0.value")>]
 let getValue (x: obj) : string = jsNative
@@ -134,24 +135,24 @@ four.addEventListener("click", unbox (fun ev ->
 
 parseElem.addEventListener("click", unbox (fun ev -> 
    match SimpleXml.tryParseElement (getValue input) with 
-   | Some el -> setValue output (beautify (sprintf "%A" el))
+   | Some el -> setValue output (beautify (Json.stringify el))
    | None -> setValue output "Could not parse input XML as an element, if there is a declaration element <?xml ... ?>, then try parsing as a document"
 ))
 
 parseDoc.addEventListener("click", unbox (fun ev -> 
    match SimpleXml.tryParseDocument (getValue input) with 
-   | Some el -> setValue output (beautify (sprintf "%A" el))
+   | Some el -> setValue output (beautify (Json.stringify el))
    | None -> setValue output "Could not parse input XML as a document"
 ))
 
 parseElemNonStrict.addEventListener("click", unbox (fun _ -> 
    match SimpleXml.tryParseElementNonStrict (getValue input) with 
-   | Some el -> setValue output (beautify (sprintf "%A" el))
+   | Some el -> setValue output (beautify (Json.stringify el))
    | None -> setValue output "Could not parse input XML as an element, if there is a declaration element <?xml ... ?>, then try parsing as a document"
 ))
 
 parseDocNonStrict.addEventListener("click", unbox (fun _ -> 
    match SimpleXml.tryParseDocumentNonStrict (getValue input) with 
-   | Some el -> setValue output (beautify (sprintf "%A" el))
+   | Some el -> setValue output (beautify (Json.stringify el))
    | None -> setValue output "Could not parse input XML as a document"
 ))
