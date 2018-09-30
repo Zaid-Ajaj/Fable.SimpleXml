@@ -3,11 +3,11 @@ group Main
     storage:none
     
     nuget FSharp.Core
-    nuget Fable.Core prerelease
-    nuget Fable.Parsimmon prerelease
-    nuget Fable.Import.Browser prerelease
-    nuget Fable.SimpleJson prerelease
-    clitool dotnet-fable prerelease
+    nuget Fable.Core
+    nuget Fable.Parsimmon
+    nuget Fable.Import.Browser
+    nuget Fable.SimpleJson
+    clitool dotnet-fable
 
 group Build
   framework >= net45
