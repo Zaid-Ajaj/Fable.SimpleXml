@@ -83,7 +83,8 @@ module Parser =
        [ Parsimmon.letter
          Parsimmon.str "-"
          Parsimmon.str ":"
-         Parsimmon.str "_" ]
+         Parsimmon.str "_"
+         Parsimmon.digit ]
        |> Parsimmon.choose
        |> Parsimmon.many
        |> Parsimmon.concat
@@ -123,7 +124,7 @@ module Parser =
     let attribute =
         Parsimmon.seq3
             attributKey
-            (Parsimmon.str "=")
+            (withWhitespace (Parsimmon.str "="))
             attributeValue
         |> Parsimmon.map (fun (key,_,value) -> (key, value))
 

@@ -35,8 +35,29 @@ testCase "Attribute containing escaped chars works" <| fun test ->
         | Some ("style", "'") -> test.pass()
         | other -> test.unexpected other
 
+testCase "attribute ends with number works" <| fun test ->
+    """ style1 ="'" """
+    |> parseUsing (withWhitespace attribute)
+    |> function
+        | Some ("style1", "'") -> test.pass()
+        | other -> test.unexpected other
+
+testCase "Another Attribute with whitespace works" <| fun test ->
+    """ style = "'" """
+    |> parseUsing (withWhitespace attribute)
+    |> function
+        | Some ("style", "'") -> test.pass()
+        | other -> test.unexpected other
+
 testCase "Parsing namespaced attributes works" <| fun test ->
     """ ns:key="value" """
+    |> parseUsing (withWhitespace attribute)
+    |> function
+        | Some ("ns:key", "value") -> test.pass()
+        | other -> test.unexpected other
+
+testCase "Parsing namespaced attributes with whitespace works" <| fun test ->
+    """ ns:key= "value" """
     |> parseUsing (withWhitespace attribute)
     |> function
         | Some ("ns:key", "value") -> test.pass()
