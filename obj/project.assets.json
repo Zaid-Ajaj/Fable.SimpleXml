@@ -26,7 +26,7 @@
           "lib/netstandard1.6/Fable.Import.Browser.dll": {}
         }
       },
-      "Fable.Parsimmon/3.0.0": {
+      "Fable.Parsimmon/3.1.0": {
         "type": "package",
         "dependencies": {
           "FSharp.Core": "4.5.2",
@@ -130,13 +130,13 @@
           "build/netstandard2.0/NETStandard.Library.targets": {}
         }
       },
-      "Fable.SimpleXml/2.0.0": {
+      "Fable.SimpleXml/2.1.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "FSharp.Core": "4.5.2",
           "Fable.Core": "2.0.0",
-          "Fable.Parsimmon": "3.0.0"
+          "Fable.Parsimmon": "3.1.0"
         },
         "compile": {
           "bin/placeholder/Fable.SimpleXml.dll": {}
@@ -149,10 +149,11 @@
   },
   "libraries": {
     "Fable.Core/2.0.0": {
-      "sha512": "sAg8+ufhM/NCiQqXDOAcPzSbgw7ox9mVLHllNZ1iniJDCC7Wcpq4t6qLuC2wynocXOX4RK+MAZ898DV5CtRowQ==",
+      "sha512": "haAKHY7/8Vqx8XBscmjJZk4zCBY17Qz0b2eTFtitstgNGnDaqqYq0nd4uaVnz/4KvQcWxWB/TgClVtud7+QEZw==",
       "type": "package",
       "path": "fable.core/2.0.0",
       "files": [
+        ".nupkg.metadata",
         ".signature.p7s",
         "fable.core.2.0.0.nupkg.sha512",
         "fable.core.nuspec",
@@ -162,10 +163,11 @@
       ]
     },
     "Fable.Import.Browser/1.3.0": {
-      "sha512": "4Uw10qcWwkDPHxY97zGsoDIJ6CpOnHbBYQ2zNb+qMzEjTuWW5S1kcdy1Aj9xqf/SylhyqBwu9voNKTsNbI0XYQ==",
+      "sha512": "XKkMKzMd6/2ULCAYTEWXflimSnbbE+rmtPvNCG/uHc4EQUcAGwpJWkgBfj2hXTTenDJC6hb96uBVfWTQtJPAJQ==",
       "type": "package",
       "path": "fable.import.browser/1.3.0",
       "files": [
+        ".nupkg.metadata",
         ".signature.p7s",
         "fable.import.browser.1.3.0.nupkg.sha512",
         "fable.import.browser.nuspec",
@@ -174,13 +176,14 @@
         "paket-installmodel.cache"
       ]
     },
-    "Fable.Parsimmon/3.0.0": {
-      "sha512": "eS+TyIjywRv0QMKkOOE2y6qWw0eITJFyQPTX7lAP2CxT+ssJ38YdOYzVZZZ6PiT9gCmOTDw5KqCFdL6AiBoxMw==",
+    "Fable.Parsimmon/3.1.0": {
+      "sha512": "pDTktuNyei30OcLd85UI9RiFHN2xxlAe0+Aai+hoa8mhc45CwlCaEBFekdF3UgX78uo/Eqvv/2WUKudgv+mWjg==",
       "type": "package",
-      "path": "fable.parsimmon/3.0.0",
+      "path": "fable.parsimmon/3.1.0",
       "files": [
+        ".nupkg.metadata",
         ".signature.p7s",
-        "fable.parsimmon.3.0.0.nupkg.sha512",
+        "fable.parsimmon.3.1.0.nupkg.sha512",
         "fable.parsimmon.nuspec",
         "fable/Fable.Parsimmon.fsproj",
         "fable/Parsimmon.fs",
@@ -191,10 +194,11 @@
       ]
     },
     "Fable.SimpleJson/2.0.0": {
-      "sha512": "xjQTgrv5c+uWv5th0gZJPIh1eKvGP+vD7z9TtdJW4XKpw4rPBvSezViK8QN/QFIdqDIsmzxFKDrg/HLbcxXImA==",
+      "sha512": "7sQB4I/JJjVeswPQOEPYT1BmIBtFSXk1yAtN5gcgcST9T7Zq4mXxw2UAOqDuz/1sPbZkOs3QL7/ssWWoRs+4aQ==",
       "type": "package",
       "path": "fable.simplejson/2.0.0",
       "files": [
+        ".nupkg.metadata",
         ".signature.p7s",
         "fable.simplejson.2.0.0.nupkg.sha512",
         "fable.simplejson.nuspec",
@@ -212,10 +216,11 @@
       ]
     },
     "FSharp.Core/4.5.2": {
-      "sha512": "mQlCpyv/wNZAihLBUbBu8gS4NpXpBCTw/eMQqujn8sGBukxSYH3CoE0vPABACNQEv7HoAX7CJt5q7l6Yb2E2hg==",
+      "sha512": "apbdQOjzsjQ637kTWQuW29jqwY18jsHMyNC5A+TPJZKFEIE2cIfQWf3V7+mXrxlbX69BueYkv293/g70wuXuRw==",
       "type": "package",
       "path": "fsharp.core/4.5.2",
       "files": [
+        ".nupkg.metadata",
         ".signature.p7s",
         "fsharp.core.4.5.2.nupkg.sha512",
         "fsharp.core.nuspec",
@@ -260,10 +265,12 @@
       ]
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
-      "sha512": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "sha512": "bLpT1f/SFlO1CzqXG12KnJzpZs6lv24uX2Rzi4Fmm0noJpNlnWRVryuO3yK18Ca04t/YHcO1e1Z0WDfjseqNzw==",
       "type": "package",
       "path": "microsoft.netcore.platforms/1.1.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/netstandard1.0/_._",
@@ -277,6 +284,7 @@
       "type": "package",
       "path": "netstandard.library/2.0.3",
       "files": [
+        ".nupkg.metadata",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "build/netstandard2.0/NETStandard.Library.targets",
@@ -400,7 +408,7 @@
         "paket-installmodel.cache"
       ]
     },
-    "Fable.SimpleXml/2.0.0": {
+    "Fable.SimpleXml/2.1.0": {
       "type": "project",
       "path": "../src/Fable.SimpleXml.fsproj",
       "msbuildProject": "../src/Fable.SimpleXml.fsproj"
@@ -411,9 +419,9 @@
       "FSharp.Core >= 4.5.2",
       "Fable.Core >= 2.0.0",
       "Fable.Import.Browser >= 1.3.0",
-      "Fable.Parsimmon >= 3.0.0",
+      "Fable.Parsimmon >= 3.1.0",
       "Fable.SimpleJson >= 2.0.0",
-      "Fable.SimpleXml >= 2.0.0",
+      "Fable.SimpleXml >= 2.1.0",
       "NETStandard.Library >= 2.0.3"
     ]
   },
@@ -479,7 +487,7 @@
           },
           "Fable.Parsimmon": {
             "target": "Package",
-            "version": "[3.0.0, )"
+            "version": "[3.1.0, )"
           },
           "Fable.SimpleJson": {
             "target": "Package",
