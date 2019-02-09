@@ -15,16 +15,27 @@
         <div id="four" class="btn btn-info">Sample Four</div>
         <br />
         <br />
-        <div id="parseElem" class="btn btn-success">Parse As Element</div>
-        <div id="parseDoc" class="btn btn-success">Parse As Document</div>
-        <div id="parseElemNonStrict" class="btn btn-success">Parse non-strict As Element </div>
-        <div id="parseDocNonStrict" class="btn btn-success">Parse non-strict As Document</div>
+        <div id="parseElem" class="btn btn-success btn-lg">Parse As Element</div>
+        <div id="parseDoc" class="btn btn-success btn-lg">Parse As Document</div>
+        <div id="parseElemNonStrict" class="btn btn-success btn-lg">Parse non-strict As Element </div>
+        <div id="parseDocNonStrict" class="btn btn-success btn-lg">Parse non-strict As Document</div>
         <hr />
        
-        <textarea id="input" rows="20" cols="60"></textarea>
-        <textarea id="output" rows="20" cols="60"> </textarea>
-
-      
+        <div class="row">
+            <div class="col-md-5">
+                <div id="input" style="width: 100%; min-height: 500px"></div>
+            </div>
+            <div class="col-md-7">
+                <div id="output" style="width: 100%; min-height: 500px"> </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ace.js"></script>
+        <script>
+            var input = ace.edit("input");
+            var output = ace.edit("output");
+            input.session.setMode("ace/mode/xml");
+            output.session.setMode("ace/mode/json");
+        </script>
         <script src="bundle.js"></script>
     </body>
 </html>

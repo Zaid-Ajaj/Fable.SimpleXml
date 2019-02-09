@@ -6,10 +6,10 @@ open Fable.Core
 open Fable.Import.Browser
 open Fable.SimpleJson 
 
-[<Emit("$0.value")>]
+[<Emit("$0.getValue()")>]
 let getValue (x: obj) : string = jsNative
 
-[<Emit("$0.value = $1")>]
+[<Emit("$0.setValue($1, -1)")>]
 let setValue (x: obj) (y: string) : unit = jsNative
 
 let sampleZero = "<Book Title='Lord of the Rings' Pages=500 ISBN=\"263468624687\" />"
@@ -114,8 +114,10 @@ let two = document.getElementById "two"
 let three = document.getElementById "three"
 let four = document.getElementById "four"
 
-let input = document.getElementById "input"
-let output = document.getElementById "output" 
+[<Global>]
+let input : obj = jsNative
+[<Global>]
+let output : obj = jsNative
 
 
 zero.addEventListener("click", unbox (fun ev -> 
