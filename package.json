@@ -11,16 +11,19 @@
     "url": "https://github.com/Zaid-Ajaj/Fable.SimpleXml.git"
   },
   "devDependencies": {
-    "gh-pages": "^1.1.0",
     "@babel/core": "^7.0.0",
     "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "babel-loader": "^8.0.0",
-    "fable-loader": "^2.0.0",
+    "fable-compiler": "^2.1.4",
+    "fable-loader": "^2.1.0",
     "loglevel": "^1.6.0",
     "qunitjs": "^2.4.1",
     "webpack": "^4.8.1",
     "webpack-cli": "^3.0.1",
     "webpack-dev-server": "^3.1.4"
+  },
+  "dependencies": {
+    "gh-pages": "^2.0.1"
   }
 }

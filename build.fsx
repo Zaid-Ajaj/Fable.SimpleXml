@@ -60,15 +60,15 @@ Target "Clean" <| fun _ ->
 Target "InstallNpmPackages" (fun _ ->
   printfn "Node version:"
   run nodeTool "--version" __SOURCE_DIRECTORY__
-  run "npm" "--version" __SOURCE_DIRECTORY__
-  run "npm" "install" __SOURCE_DIRECTORY__
+  run "yarn" "--version" __SOURCE_DIRECTORY__
+  run "yarn" "install" __SOURCE_DIRECTORY__
 )
 
 Target "RestoreFableTestProject" <| fun _ ->
   run dotnetCli "restore" testsPath
 
 Target "RunLiveTests" <| fun _ ->
-    run dotnetCli "fable npm-run start" testsPath
+    run "npm" "start" __SOURCE_DIRECTORY__
 
 let publish projectPath = fun () ->
     [ projectPath </> "bin"
@@ -90,7 +90,7 @@ let publish projectPath = fun () ->
 Target "PublishNuget" (publish libPath)
 
 Target "CompileFableTestProject" <| fun _ ->
-    run dotnetCli "fable npm-run build --port free" testsPath
+    run "npm" "run build" "."
 
 Target "RunTests" <| fun _ ->
     printfn "Building %s with Fable" testsPath
@@ -99,12 +99,10 @@ Target "RunTests" <| fun _ ->
     cleanBundles()
 
 Target "RunSample" <| fun _ -> 
-    run dotnetCli "restore" "./sample"
-    run dotnetCli "fable npm-run sample" "./sample"
+    run "npm" "run sample" "."
 
 Target "CompileSample" <| fun _ -> 
-    run dotnetCli "restore" "./sample"
-    run dotnetCli "fable npm-run build-sample --port free" "./sample"
+    run "npm" "run build-sample" "."
 
 "Clean"
   ==> "InstallNpmPackages"
