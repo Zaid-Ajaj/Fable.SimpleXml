@@ -3,7 +3,7 @@ module App
 open Fable.SimpleXml
 open Fable
 open Fable.Core
-open Fable.Import.Browser
+open Browser.Dom
 open Fable.SimpleJson 
 
 [<Emit("$0.getValue()")>]
