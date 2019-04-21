@@ -661,3 +661,25 @@ testCase "Generater outputs valid Xml with attributes" <| fun test ->
     match SimpleXml.tryParseElementNonStrict xml with 
     | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc)) 
     | None -> test.failwith xml
+
+testCase "Generater outputs valid Xml with attributes" <| fun test ->
+    let people = 
+        node "people" [ attr.value("leafs", true) ] [
+            leaf "person" [ 
+                attr.value("name", "John Doe")
+                attr.value("age", 26)
+                attr.value("married", false) 
+            ]
+
+            leaf "person" [
+                attr.value("name", "Jane Doe")
+                attr.value("age", 25)
+                attr.value("married", false)
+            ]
+        ]
+    
+    let xml = serializeXml people
+
+    match SimpleXml.tryParseElementNonStrict xml with 
+    | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc)) 
+    | None -> test.failwith xml
