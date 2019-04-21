@@ -2,9 +2,11 @@ module Tests
 
 open QUnit
 open Fable.SimpleXml
+open Fable.SimpleXml.Generator
 open Fable.SimpleXml.Parser
 open Fable.Parsimmon
 open Fable
+open Fable.SimpleJson
 
 registerModule "SimpleXml Tests"
 
@@ -623,3 +625,39 @@ testCase "Parsing XML with comments works" <| fun test ->
     |> test.areEqual [ "Just commenting here xD"
                        " Another comment " 
                        " and another" ]
+
+testCase "Generater outputs valid Xml" <| fun test ->
+    let person = 
+        node "Person" [ ] [
+            node "Id" [ ] [ text "1" ]
+            node "Name" [ ] [ text "John" ]
+            node "Age" [ ] [ text "20" ]
+        ]
+    
+    let xml = serializeXml person 
+
+    match SimpleXml.tryParseElementNonStrict xml with 
+    | Some doc -> test.passWith xml 
+    | None -> test.failwith xml
+
+testCase "Generater outputs valid Xml with attributes" <| fun test ->
+    let people = 
+        node "people" [ ] [
+            leaf "person" [ 
+                attr.value("name", "John Doe")
+                attr.value("age", 26)
+                attr.value("married", false) 
+            ]
+
+            leaf "person" [
+                attr.value("name", "Jane Doe")
+                attr.value("age", 25)
+                attr.value("married", false)
+            ]
+        ]
+    
+    let xml = serializeXml people
+
+    match SimpleXml.tryParseElementNonStrict xml with 
+    | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc)) 
+    | None -> test.failwith xml

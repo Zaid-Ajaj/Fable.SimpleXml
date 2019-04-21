@@ -97,6 +97,64 @@ type XmlDocument = {
 }
 ```
 
+### Generate Xml:
+Create Xml from a tree structure. Opening the `Fable.SimpleXml.Generator` module, gives you access to these:
+ - `node`: creates a nested element 
+ - `leaf`: creates a self-closing element
+ - `text`: creates a terminal node with text
+ - `attr.value`: create an attribute
+ - `serializeXml`: converts a Xml tree to a string
+
+> Indentation is not supported yet. PR's are welcome ;)
+
+```fs
+open Fable.SimpleXml.Generator
+
+let people = 
+    node "people" [ ] [
+        leaf "person" [ 
+            attr.value("name", "John Doe")
+            attr.value("age", 26)
+            attr.value("married", false) 
+        ]
+
+        leaf "person" [
+            attr.value("name", "Jane Doe")
+            attr.value("age", 25)
+            attr.value("married", true)
+        ]
+    ]
+
+serializeXml people
+```
+will generate:
+```xml
+<people>
+  <person name="John Doe" age="26" married="false" />
+  <person name="Jane Doe" age="25" married="true" />
+</people>
+```
+
+Use nested property
+```fs
+let person = 
+    node "person" [ ] [
+        node "id" [ ] [ text "1" ]
+        node "name" [ ] [ text "John" ]
+        node "married" [ ] [ text "false" ]
+    ]
+
+serializeXml person
+```
+will generate
+```xml
+<person>
+    <id>1</id>
+    <name>John</name>
+    <married>false</married>
+</person>
+```
+
 ### Known Issues
  - Comments cannot contaon `-` 
  - CDATA nodes cannot contain `]`
