@@ -1,4 +1,4 @@
-# Fable.SimpleXml [![Build Status](https://travis-ci.org/Zaid-Ajaj/Fable.SimpleXml.svg?branch=master)](https://travis-ci.org/Zaid-Ajaj/Fable.SimpleXml)  [![Nuget](https://img.shields.io/nuget/v/Fable.SimpleXml.svg?maxAge=0&colorB=brightgreen)](https://www.nuget.org/packages/Fable.SimpleXml)
+# Fable.SimpleXml [![Build Status](https://travis-ci.org/Zaid-Ajaj/Fable.SimpleXml.svg?branch=master)](https://travis-ci.org/Zaid-Ajaj/Fable.SimpleXml) [![Build Status](https://ci.appveyor.com/api/projects/status/s3esn08o7d4ehlm1?svg=true)](https://ci.appveyor.com/project/Zaid-Ajaj/fable-simplexml) [![Nuget](https://img.shields.io/nuget/v/Fable.SimpleXml.svg?maxAge=0&colorB=brightgreen)](https://www.nuget.org/packages/Fable.SimpleXml)
 
 A simple library for parsing Xml strings into structured Xml data. Works in browser and node without installing any extra javascript dependencies. It is written using parser combinators from [Fable.Parsimmon](https://github.com/Zaid-Ajaj/Fable.Parsimmon)
 
