@@ -12,7 +12,7 @@ registerModule "SimpleXml Tests"
 
 let parseUsing p input =
     Parsimmon.parse input p
-
+    
 testCase "Parsing attributes" <| fun test ->
     ["height=\"12px\"";
      "width=\"15px\"";
@@ -625,6 +625,15 @@ testCase "Parsing XML with comments works" <| fun test ->
     |> test.areEqual [ "Just commenting here xD"
                        " Another comment " 
                        " and another" ]
+                       
+testCase "Parsing XML with hyphens with in comments  works" <| fun test ->
+    "<Hello>
+        <!--Just a - hyphen-->
+    </Hello>"
+    |> SimpleXml.parseElement
+    |> SimpleXml.findElementsBy (fun el -> el.IsComment)
+    |> List.map SimpleXml.content
+    |> test.areEqual [ "Just a - hyphen" ]
 
 testCase "Generater outputs valid Xml" <| fun test ->
     let person = 

@@ -2,6 +2,10 @@ namespace Fable.SimpleXml
 
 open Fable.Parsimmon
 open System
+open Fable.Core.Util
+open Fable.Core
+open Fable.Core.JsInterop
+
 
 module Tuple =
     let concat (a, b) = String.concat "" [a; b]
@@ -173,28 +177,11 @@ module Parser =
         |> Parsimmon.atLeastOneOrMany
         |> Parsimmon.concat
 
+    [<Import("regexp", "../.fable/Fable.Parsimmon.4.0.0/Parsimmon.js"); Emit("$0(new RegExp($1), $2)")>] // Emit("$0(/$1!/)")>]
+    let regexGroup (pattern: string)  (group:int): IParser<string> = jsNative
+    
     let comment = 
-        let emptyComment = 
-            Parsimmon.str "<!---->"
-            |> Parsimmon.map (fun _ -> "")
-
-        let commentWithWhitespace = 
-            Parsimmon.seq3 
-                (Parsimmon.str "<!--")
-                (Parsimmon.optionalWhitespace)
-                (Parsimmon.str "-->")
-            |> Parsimmon.map (fun (_,b,_) -> b)
-
-        let nonEmptyComment =  
-            Parsimmon.seq3 
-                (Parsimmon.str "<!--")
-                (Parsimmon.satisfy (fun c -> c <> "-") 
-                |> Parsimmon.many 
-                |> Parsimmon.concat)
-                (Parsimmon.str "-->")
-            |> Parsimmon.map (fun (_,text,_) -> text)
-
-        Parsimmon.choose [emptyComment; commentWithWhitespace; nonEmptyComment]
+        regexGroup """<!--([\s\S\n]*?)-->""" 1
 
     let cdataNode = 
         let emptyCData = 

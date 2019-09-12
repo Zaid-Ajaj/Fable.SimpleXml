@@ -156,7 +156,6 @@ will generate
 ```
 
 ### Known Issues
- - Comments cannot contaon `-` 
  - CDATA nodes cannot contain `]`
 
 ### Running sample app locally
