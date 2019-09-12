@@ -1,0 +1,178 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\projects\\Fable.SimpleXml\\sample\\Sample.fsproj": {}
+  },
+  "projects": {
+    "C:\\projects\\Fable.SimpleXml\\sample\\Sample.fsproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\projects\\Fable.SimpleXml\\sample\\Sample.fsproj",
+        "projectName": "Sample",
+        "projectPath": "C:\\projects\\Fable.SimpleXml\\sample\\Sample.fsproj",
+        "packagesPath": "C:\\Users\\zaidn\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\Fable.SimpleXml\\sample\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\projects\\Fable.SimpleXml\\NuGet.Config",
+          "C:\\Users\\zaidn\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {
+              "C:\\projects\\Fable.SimpleXml\\src\\Fable.SimpleXml.fsproj": {
+                "projectPath": "C:\\projects\\Fable.SimpleXml\\src\\Fable.SimpleXml.fsproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "noWarn": [
+            "NU1603",
+            "NU1604",
+            "NU1605",
+            "NU1608"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "FSharp.Core": {
+              "target": "Package",
+              "version": "[4.6.2, )"
+            },
+            "Fable.Browser.Blob": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Fable.Browser.Dom": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Fable.Browser.Event": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Fable.Browser.WebStorage": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Fable.Core": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Fable.Parsimmon": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "Fable.SimpleJson": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "C:\\projects\\Fable.SimpleXml\\src\\Fable.SimpleXml.fsproj": {
+      "version": "3.2.0",
+      "restore": {
+        "projectUniqueName": "C:\\projects\\Fable.SimpleXml\\src\\Fable.SimpleXml.fsproj",
+        "projectName": "Fable.SimpleXml",
+        "projectPath": "C:\\projects\\Fable.SimpleXml\\src\\Fable.SimpleXml.fsproj",
+        "packagesPath": "C:\\Users\\zaidn\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\Fable.SimpleXml\\src\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\projects\\Fable.SimpleXml\\NuGet.Config",
+          "C:\\Users\\zaidn\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "noWarn": [
+            "NU1603",
+            "NU1604",
+            "NU1605",
+            "NU1608"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "FSharp.Core": {
+              "target": "Package",
+              "version": "[4.6.2, )"
+            },
+            "Fable.Core": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Fable.Parsimmon": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,4 @@
-dotnet-fable
 FSharp.Core
 Fable.Core
 Fable.SimpleJson
-Fable.Import.Browser
+Fable.Browser.Dom
