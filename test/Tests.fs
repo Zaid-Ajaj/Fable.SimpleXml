@@ -262,9 +262,9 @@ testCase "CData node parsing works" <| fun test ->
     ["<![CDATA[]]>"
      "<![CDATA[ this is some content ]]>"]
     |> List.choose (parseUsing cdataNode)
-    |> function 
-        | ["";" this is some content "] -> test.pass() 
-        | other -> test.unexpected other 
+    |> function
+        | ["";" this is some content "] -> test.pass()
+        | other -> test.unexpected other
 
 testCase "Chars content works" <| fun test ->
     [ "2.0"
@@ -392,11 +392,11 @@ testCase "Parsing mixed nodes: text then node then text" <| fun test ->
     |> parseUsing xmlElement
     |> function
         | None -> test.failwith "No match"
-        | Some node -> 
-            match node.Children with 
-            | [ first; middle; second ] -> 
+        | Some node ->
+            match node.Children with
+            | [ first; middle; second ] ->
                 test.areEqual "other" middle.Name
-                test.areEqual "hello " first.Content 
+                test.areEqual "hello " first.Content
                 test.areEqual " there" second.Content
             | other -> test.unexpected other
 
@@ -486,18 +486,18 @@ testCase "Recursive XML node parsing works" <| fun test ->
                 test.areEqual true (Map.isEmpty elemZaid.Attributes)
                 let nonTextNodes = List.filter (fun el -> not el.IsTextNode) elemZaid.Children
                 test.areEqual 3 (List.length nonTextNodes)
-               
+
                 [ SimpleXml.findElementByName "Id" elemZaid
                   SimpleXml.findElementByName "FirstName" elemZaid
-                  SimpleXml.findElementByName "LastName" elemZaid ] 
+                  SimpleXml.findElementByName "LastName" elemZaid ]
                 |> List.map (fun el -> el.Content)
-                |> function 
-                     | [ "20"; "Zaid";"Ajaj" ] -> 
-                        match SimpleXml.tryFindElementByName "LastName" elemZaid with 
-                        | Some lastName -> 
+                |> function
+                     | [ "20"; "Zaid";"Ajaj" ] ->
+                        match SimpleXml.tryFindElementByName "LastName" elemZaid with
+                        | Some lastName ->
                             test.areEqual "true" (Map.find "makeLowerCase" lastName.Attributes)
                         | None -> test.failwith "Should not happen"
-                     | other -> test.unexpected other                
+                     | other -> test.unexpected other
             | other -> test.unexpected other
 
 
@@ -549,7 +549,7 @@ testCase "SimpleXml.parseManyElements works" <| fun test ->
     |> SimpleXml.parseManyElements
     |> List.filter (fun el -> not el.IsTextNode)
     |> List.map (fun el -> Map.find "Name" el.Attributes)
-    |> function 
+    |> function
         | [ "John"; "Jane"; "Doe" ] -> test.pass()
         | otherwise -> test.unexpected otherwise
 
@@ -560,7 +560,7 @@ testCase "SimpleXml use case" <| fun test ->
     </People>"
     |> SimpleXml.parseElementNonStrict
     |> SimpleXml.children
-    |> List.map SimpleXml.content 
+    |> List.map SimpleXml.content
     |> test.areEqual [ "John"; "Jane" ]
 
 testCase "SimpleXml.parseNonStrict excludes dummy whitespace" <| fun test ->
@@ -570,13 +570,13 @@ testCase "SimpleXml.parseNonStrict excludes dummy whitespace" <| fun test ->
     </People>"
     |> SimpleXml.parseElementNonStrict
     |> SimpleXml.children
-    |> List.map (fun el -> int (Map.find "Id" el.Attributes), el.Content ) 
-    |> test.areEqual [ (10, "John"); (20, "Jane") ]  
+    |> List.map (fun el -> int (Map.find "Id" el.Attributes), el.Content )
+    |> test.areEqual [ (10, "John"); (20, "Jane") ]
 
 
 type Person = { Id : int; Name: string }
 
-let createPerson id name = 
+let createPerson id name =
     { Id = id; Name = name }
 
 testCase "Parsing people works" <| fun test ->
@@ -588,23 +588,24 @@ testCase "Parsing people works" <| fun test ->
     """
     |> SimpleXml.parseElement
     |> SimpleXml.findElementsByName "Person"
-    |> List.map (fun elem -> 
+    |> List.map (fun elem ->
         let id = int (Map.find "Id" elem.Attributes)
-        let name = Map.find "Name" elem.Attributes 
+        let name = Map.find "Name" elem.Attributes
         createPerson id name)
-    |> test.areEqual [{ Id = 1; Name = "John" };  
-                      { Id = 2; Name = "Jane" }]  
+    |> test.areEqual [{ Id = 1; Name = "John" };
+                      { Id = 2; Name = "Jane" }]
 
 
-testCase "Parsing empty comments works" <| fun test ->
+testCase "Parsing comments works" <| fun test ->
     [ "<!---->"
       "<!-- -->"
       "<!--hello there-->"
       "<!-- hello there -->"
       "<!-- <other /> -->"
+      "<!-- -what- -->"
       "<!-- \n\n -->" ]
     |> List.choose (parseUsing comment)
-    |> test.areEqual [ "" ; " "; "hello there"; " hello there "; " <other /> "; " \n\n " ]
+    |> test.areEqual [ "" ; " "; "hello there"; " hello there "; " <other /> "; " -what- "; " \n\n " ]
 
 testCase "Parsing cdata nodes inside xml node works" <| fun test ->
     "<div>Hello <![CDATA[THERE]]></div>"
@@ -623,30 +624,30 @@ testCase "Parsing XML with comments works" <| fun test ->
     |> SimpleXml.findElementsBy (fun el -> el.IsComment)
     |> List.map SimpleXml.content
     |> test.areEqual [ "Just commenting here xD"
-                       " Another comment " 
+                       " Another comment "
                        " and another" ]
 
 testCase "Generater outputs valid Xml" <| fun test ->
-    let person = 
+    let person =
         node "Person" [ ] [
             node "Id" [ ] [ text "1" ]
             node "Name" [ ] [ text "John" ]
             node "Age" [ ] [ text "20" ]
         ]
-    
-    let xml = serializeXml person 
 
-    match SimpleXml.tryParseElementNonStrict xml with 
-    | Some doc -> test.passWith xml 
+    let xml = serializeXml person
+
+    match SimpleXml.tryParseElementNonStrict xml with
+    | Some doc -> test.passWith xml
     | None -> test.failwith xml
 
 testCase "Generater outputs valid Xml with attributes" <| fun test ->
-    let people = 
+    let people =
         node "people" [ ] [
-            leaf "person" [ 
+            leaf "person" [
                 attr.value("name", "John Doe")
                 attr.value("age", 26)
-                attr.value("married", false) 
+                attr.value("married", false)
             ]
 
             leaf "person" [
@@ -655,20 +656,20 @@ testCase "Generater outputs valid Xml with attributes" <| fun test ->
                 attr.value("married", false)
             ]
         ]
-    
+
     let xml = serializeXml people
 
-    match SimpleXml.tryParseElementNonStrict xml with 
-    | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc)) 
+    match SimpleXml.tryParseElementNonStrict xml with
+    | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc))
     | None -> test.failwith xml
 
 testCase "Generater outputs valid Xml with attributes" <| fun test ->
-    let people = 
+    let people =
         node "people" [ attr.value("leafs", true) ] [
-            leaf "person" [ 
+            leaf "person" [
                 attr.value("name", "John Doe")
                 attr.value("age", 26)
-                attr.value("married", false) 
+                attr.value("married", false)
             ]
 
             leaf "person" [
@@ -677,9 +678,9 @@ testCase "Generater outputs valid Xml with attributes" <| fun test ->
                 attr.value("married", false)
             ]
         ]
-    
+
     let xml = serializeXml people
 
-    match SimpleXml.tryParseElementNonStrict xml with 
-    | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc)) 
+    match SimpleXml.tryParseElementNonStrict xml with
+    | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc))
     | None -> test.failwith xml

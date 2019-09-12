@@ -173,57 +173,49 @@ module Parser =
         |> Parsimmon.atLeastOneOrMany
         |> Parsimmon.concat
 
-    let comment = 
-        let emptyComment = 
-            Parsimmon.str "<!---->"
-            |> Parsimmon.map (fun _ -> "")
-
-        let commentWithWhitespace = 
-            Parsimmon.seq3 
+    let comment =
+        let commentWithWhitespace =
+            Parsimmon.seq3
                 (Parsimmon.str "<!--")
                 (Parsimmon.optionalWhitespace)
                 (Parsimmon.str "-->")
             |> Parsimmon.map (fun (_,b,_) -> b)
 
-        let nonEmptyComment =  
-            Parsimmon.seq3 
-                (Parsimmon.str "<!--")
-                (Parsimmon.satisfy (fun c -> c <> "-") 
-                |> Parsimmon.many 
-                |> Parsimmon.concat)
-                (Parsimmon.str "-->")
-            |> Parsimmon.map (fun (_,text,_) -> text)
+        let commentWithWhitespaceAndContent =
+            Parsimmon.regexGroupNumber """<!--([\s\S\n]*?)-->""" 1
 
-        Parsimmon.choose [emptyComment; commentWithWhitespace; nonEmptyComment]
+        Parsimmon.choose [commentWithWhitespace; commentWithWhitespaceAndContent]
 
-    let cdataNode = 
-        let emptyCData = 
+    let cdataNode =
+        let emptyCData =
             Parsimmon.str "<![CDATA[]]>"
             |> Parsimmon.map (fun _ -> "")
 
-        let cdataWithWhitespace = 
-            Parsimmon.seq3 
+        let cdataWithWhitespace =
+            Parsimmon.seq3
                 (Parsimmon.str "<![CDATA[")
                 (Parsimmon.optionalWhitespace)
                 (Parsimmon.str "]]>")
             |> Parsimmon.map (fun (_,b,_) -> b)
 
-        let nonEmptyCDataNode =  
-            Parsimmon.seq3 
-                (Parsimmon.str "<![CDATA[")
-                (Parsimmon.satisfy (fun c -> c <> "]") 
-                |> Parsimmon.many 
-                |> Parsimmon.concat)
-                (Parsimmon.str "]]>")
-            |> Parsimmon.map (fun (_,text,_) -> text)
+        let nonEmptyCDataNode =
+            Parsimmon.regexGroupNumber """<![CDATA[(.*?)]]>""" 1
 
-        Parsimmon.choose [emptyCData; cdataWithWhitespace; nonEmptyCDataNode]
+        let cdataWithWhitespaceAndContent =
+            Parsimmon.regexGroupNumber """<!\[CDATA\[([\s\S\n]*?)\]\]>""" 1
+
+        Parsimmon.choose [
+            emptyCData
+            cdataWithWhitespace
+            nonEmptyCDataNode
+            cdataWithWhitespaceAndContent
+        ]
 
     let nodeOpening =
         Parsimmon.seq2
           openingTagName
           (withWhitespace manyAttributes)
-        |> Parsimmon.bind (fun (tag, attrs) -> 
+        |> Parsimmon.bind (fun (tag, attrs) ->
             Parsimmon.str ">"
             |> Parsimmon.map (fun (_) -> tag, attrs))
 
@@ -313,9 +305,9 @@ module Parser =
                     IsComment = false
                 })
 
-        let commentNode = 
-            comment 
-            |> Parsimmon.map (fun text -> 
+        let commentNode =
+            comment
+            |> Parsimmon.map (fun text ->
                 {
                     Namespace = None
                     Name = ""
@@ -326,7 +318,7 @@ module Parser =
                     IsTextNode = false
                     IsComment = true
                 })
-                
+
         let emptyElementWithText =
             emptyNodeWithTextContent
             |> Parsimmon.map (fun (content, ns, name, attrs) ->

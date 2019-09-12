@@ -9,7 +9,7 @@ A simple library for parsing Xml strings into structured Xml data. Works in brow
 ### Installation
 Install from nuget using paket
 ```sh
-paket add nuget Fable.SimpleXml --project path/to/YourProject.fsproj 
+paket add nuget Fable.SimpleXml --project path/to/YourProject.fsproj
 ```
 Make sure the references are added to your paket files
 ```sh
@@ -20,11 +20,11 @@ nuget Fable.SimpleXml
 Fable.SimpleXml
 ```
 
-### Example usage 
+### Example usage
 ```fs
 type Person = { Id : int; Name: string }
 
-let createPerson id name = 
+let createPerson id name =
     { Id = id; Name = name }
 
 """
@@ -35,10 +35,10 @@ let createPerson id name =
 """
 |> SimpleXml.parseElement
 |> SimpleXml.findElementsByName "Person"
-|> List.map (fun elem -> 
+|> List.map (fun elem ->
     let id = int (Map.find "Id" elem.Attributes)
-    let name = Map.find "Name" elem.Attributes 
-    createPerson id name)                      
+    let name = Map.find "Name" elem.Attributes
+    createPerson id name)
 ```
 Or you can inspect the content of the elements:
 ```fs
@@ -49,13 +49,13 @@ testCase "SimpleXml use case" <| fun test ->
     </People>"
     |> SimpleXml.parseElementNonStrict
     |> SimpleXml.children
-    |> List.map SimpleXml.content 
+    |> List.map SimpleXml.content
     |> test.areEqual [ "John"; "Jane" ]
 ```
 ### API
 
 ```fs
-// Parsing functions 
+// Parsing functions
 SimpleXml.tryParseElement : string -> Option<XmlElement>
 SimpleXml.parseElement : string -> XmlElement
 SimpleXml.tryParseDocument : string -> Option<XmlDocument>
@@ -80,26 +80,26 @@ SimpleXml.tryFindElementByName : string -> XmlElement -> Option<XmlElement>
 
 Where `XmlElement` and `XmlDocument` are defined as follows:
 ```fs
-type XmlElement = { 
+type XmlElement = {
     Namespace : string option
     Name : string
     Attributes : Map<string, string>
-    Content : string 
-    Children : XmlElement list 
+    Content : string
+    Children : XmlElement list
     SelfClosing : bool
     IsTextNode : bool
     IsComment : bool
 }
 
 type XmlDocument = {
-    Declaration : Map<string, string> option 
-    Root : XmlElement 
+    Declaration : Map<string, string> option
+    Root : XmlElement
 }
 ```
 
 ### Generate Xml:
 Create Xml from a tree structure. Opening the `Fable.SimpleXml.Generator` module, gives you access to these:
- - `node`: creates a nested element 
+ - `node`: creates a nested element
  - `leaf`: creates a self-closing element
  - `text`: creates a terminal node with text
  - `attr.value`: create an attribute
@@ -110,12 +110,12 @@ Create Xml from a tree structure. Opening the `Fable.SimpleXml.Generator` module
 ```fs
 open Fable.SimpleXml.Generator
 
-let people = 
+let people =
     node "people" [ ] [
-        leaf "person" [ 
+        leaf "person" [
             attr.value("name", "John Doe")
             attr.value("age", 26)
-            attr.value("married", false) 
+            attr.value("married", false)
         ]
 
         leaf "person" [
@@ -137,7 +137,7 @@ will generate:
 
 Use nested property
 ```fs
-let person = 
+let person =
     node "person" [ ] [
         node "id" [ ] [ text "1" ]
         node "name" [ ] [ text "John" ]
@@ -155,19 +155,15 @@ will generate
 </person>
 ```
 
-### Known Issues
- - Comments cannot contaon `-` 
- - CDATA nodes cannot contain `]`
-
 ### Running sample app locally
 ```sh
 ./build.sh RunSample
-#or 
+#or
 build RunSample
 ```
-### Running the tests live 
+### Running the tests live
 ```sh
-./build.sh RunLiveTests 
+./build.sh RunLiveTests
 ```
 ### Building the tests and running QUnit cli runner
 ```sh
