@@ -72,7 +72,7 @@ module Generator =
                 |> List.map serializeXml
                 |> String.concat ""
             
-            sprintf "<%s:%s>%s</%s>" prefix tag childNodes tag
+            sprintf "<%s:%s>%s</%s:%s>" prefix tag childNodes prefix tag
     
         //
         | XNode.XNodeList (Tag(tag), attributes, children) ->
@@ -98,7 +98,10 @@ module Generator =
                 |> List.map serializeXml
                 |> String.concat ""
     
-            sprintf "<%s:%s %s>%s</%s>" prefix tag attributes childNodes tag
+            sprintf "<%s:%s %s>%s</%s:%s>" prefix tag attributes childNodes prefix tag
+
+        | Namespace (prefix, anyNode) ->
+            failwith (sprintf "A 'Namespace' prefix cannot be applied to a '%A'." anyNode)
 
     /// 
     let ofXmlElement (root:XmlElement) =
