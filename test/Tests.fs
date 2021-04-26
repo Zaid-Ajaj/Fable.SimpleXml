@@ -684,3 +684,109 @@ testCase "Generater outputs valid Xml with attributes" <| fun test ->
     match SimpleXml.tryParseElementNonStrict xml with
     | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc))
     | None -> test.failwith xml
+
+testCase "Generator can reverse XmlElement to xNodes and xmlString" <| fun test ->
+    let customXml = """<customXml><Validation SwateVersion="0.1.4"><TableValidation DateTime="2020-12-30 15:03" TableName="annotationTable" Userlist="" WorksheetName="Sheet1"><ColumnValidation ColumnAdress="0" ColumnHeader="Source Name" Importance="None" Unit="None" ValidationFormat="Text" /><ColumnValidation ColumnAdress="1" ColumnHeader="Factor [light unit]" Importance="None" Unit="lux" ValidationFormat="None" /><ColumnValidation ColumnAdress="7" ColumnHeader="Parameter [organism]" Importance="100" Unit="None" ValidationFormat="OntologyTerm organism" /><ColumnValidation ColumnAdress="10" ColumnHeader="Parameter [instrument model]" Importance="100" Unit="None" ValidationFormat="OntologyTerm instrument model" /><ColumnValidation ColumnAdress="13" ColumnHeader="Sample Name" Importance="None" Unit="None" ValidationFormat="None" /></TableValidation></Validation></customXml>"""
+    let xmlElement = SimpleXml.tryParseElement customXml
+
+    match xmlElement with
+    | None -> test.failwith customXml
+    | Some xml -> 
+        let xNodeElement = Generator.ofXmlElement xml
+        let xmlString = Generator.serializeXml xNodeElement 
+        let isSame = if customXml = xmlString then Some xmlString else None
+
+        match isSame with
+        | None -> test.failwith xmlString
+        | Some xmlString ->
+            test.passWith (sprintf "%A" xmlString)
+    
+
+testCase "Generator can correctly apply text nodes" <| fun test ->
+    let customXml = 
+        """<customXml>
+            <Validation SwateVersion="0.1.4">
+                <TableValidation DateTime="2020-12-30 15:03" TableName="annotationTable" Userlist="" WorksheetName="Sheet1">
+                    <ColumnValidation ColumnAdress="0" ColumnHeader="Source Name" Importance="None" Unit="None" ValidationFormat="Text" />
+                    <ColumnValidation ColumnAdress="1" ColumnHeader="Factor [light unit]" Importance="None" Unit="lux" ValidationFormat="None" />
+                    <ColumnValidation ColumnAdress="7" ColumnHeader="Parameter [organism]" Importance="100" Unit="None" ValidationFormat="OntologyTerm organism" />
+                    <ColumnValidation ColumnAdress="10" ColumnHeader="Parameter [instrument model]" Importance="100" Unit="None" ValidationFormat="OntologyTerm instrument model" />
+                    <ColumnValidation ColumnAdress="13" ColumnHeader="Sample Name" Importance="None" Unit="None" ValidationFormat="None" />
+                </TableValidation>
+            </Validation>
+        </customXml>"""
+
+    let xmlElement = SimpleXml.tryParseElement customXml
+    
+    match xmlElement with
+    | None -> test.failwith customXml
+    | Some xml -> 
+        let xNodeElement = Generator.ofXmlElement xml
+        let xmlString = Generator.serializeXml xNodeElement 
+        let isSame = if customXml = xmlString then Some xmlString else None
+
+        match isSame with
+        /// This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
+        | None -> test.failwith (sprintf "%s \n vs new \n %s" customXml xmlString)
+        | Some xmlString ->
+            test.passWith (sprintf "%A" xmlString)
+
+testCase "Generator can correctly apply Namespaces" <| fun test ->
+    let customXml = 
+        """<customXml>
+            <Validation SwateVersion="0.1.4">
+                <f:TableValidation DateTime="2020-12-30 15:03" TableName="annotationTable" Userlist="" WorksheetName="Sheet1">
+                    <f:ColumnValidation ColumnAdress="0" ColumnHeader="Source Name" Importance="None" Unit="None" ValidationFormat="Text" />
+                    <f:ColumnValidation ColumnAdress="1" ColumnHeader="Factor [light unit]" Importance="None" Unit="lux" ValidationFormat="None" />
+                    <f:ColumnValidation ColumnAdress="7" ColumnHeader="Parameter [organism]" Importance="100" Unit="None" ValidationFormat="OntologyTerm organism" />
+                    <f:ColumnValidation ColumnAdress="10" ColumnHeader="Parameter [instrument model]" Importance="100" Unit="None" ValidationFormat="OntologyTerm instrument model" />
+                    <f:ColumnValidation ColumnAdress="13" ColumnHeader="Sample Name" Importance="None" Unit="None" ValidationFormat="None" />
+                </f:TableValidation>
+            </Validation>
+        </customXml>"""
+
+    let xmlElement = SimpleXml.tryParseElement customXml
+    
+    match xmlElement with
+    | None -> test.failwith customXml
+    | Some xml -> 
+        let xNodeElement = Generator.ofXmlElement xml
+        let xmlString = Generator.serializeXml xNodeElement 
+        let isSame = if customXml = xmlString then Some xmlString else None
+
+        match isSame with
+        /// This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
+        | None -> test.failwith (sprintf "%s \n vs new \n %s" customXml xmlString)
+        | Some xmlString ->
+            test.passWith (sprintf "%A" xmlString)
+
+testCase "Generator can correctly apply Comments" <| fun test ->
+    let customXml = 
+        """<customXml>
+            <!--- This is just a test comment--->
+            <Validation SwateVersion="0.1.4">
+                <f:TableValidation DateTime="2020-12-30 15:03" TableName="annotationTable" Userlist="" WorksheetName="Sheet1">
+                    <!---Column 0 is very nice--->
+                    <f:ColumnValidation ColumnAdress="0" ColumnHeader="Source Name" Importance="None" Unit="None" ValidationFormat="Text" />
+                    <f:ColumnValidation ColumnAdress="1" ColumnHeader="Factor [light unit]" Importance="None" Unit="lux" ValidationFormat="None" />
+                    <f:ColumnValidation ColumnAdress="7" ColumnHeader="Parameter [organism]" Importance="100" Unit="None" ValidationFormat="OntologyTerm organism" />
+                    <f:ColumnValidation ColumnAdress="10" ColumnHeader="Parameter [instrument model]" Importance="100" Unit="None" ValidationFormat="OntologyTerm instrument model" />
+                    <f:ColumnValidation ColumnAdress="13" ColumnHeader="Sample Name" Importance="None" Unit="None" ValidationFormat="None" />
+                </f:TableValidation>
+            </Validation>
+        </customXml>"""
+
+    let xmlElement = SimpleXml.tryParseElement customXml
+    
+    match xmlElement with
+    | None -> test.failwith customXml
+    | Some xml -> 
+        let xNodeElement = Generator.ofXmlElement xml
+        let xmlString = Generator.serializeXml xNodeElement 
+        let isSame = if customXml = xmlString then Some xmlString else None
+
+        match isSame with
+        /// This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
+        | None -> test.failwith (sprintf "%s \n vs new \n %s" customXml xmlString)
+        | Some xmlString ->
+            test.passWith (sprintf "%A" xmlString)

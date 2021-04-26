@@ -102,8 +102,11 @@ Create Xml from a tree structure. Opening the `Fable.SimpleXml.Generator` module
  - `node`: creates a nested element
  - `leaf`: creates a self-closing element
  - `text`: creates a terminal node with text
+ - `comment`: creates a comment
+ - `namespace`: adds a namespace prefix to a `node` or a `leaf`
  - `attr.value`: create an attribute
- - `serializeXml`: converts a Xml tree to a string
+ - `ofXmlElement`/`ofXmlElements`: Can be used to convert a `XmlElemnt` to a Xml tree
+ - `serializeXml`: converts a Xml tree to a xml string
 
 > Indentation is not supported yet. PR's are welcome ;)
 
@@ -153,6 +156,25 @@ will generate
     <name>John</name>
     <married>false</married>
 </person>
+```
+
+Access any xml to update/change it
+```fs
+let xml =
+    """people>
+        <person name="John Doe" age="26" married="false" />
+        <person name="Jane Doe" age="25" married="true" />
+    </people>"""
+
+let parsedXml = SimpleXml.parseElement xml
+
+// .. Work with the xml by removing, changing, adding any xml element or attribute including comments and namespaces. ..
+
+// Revert XmlElement back to xml string
+
+let xmlTree = Generator.ofXmlElement parsedXml
+
+serializeXml xmlTree
 ```
 
 ### Running sample app locally
