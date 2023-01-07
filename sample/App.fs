@@ -4,7 +4,7 @@ open Fable.SimpleXml
 open Fable
 open Fable.Core
 open Browser.Dom
-open Fable.SimpleJson 
+open Fable.SimpleJson
 
 [<Emit("$0.getValue()")>]
 let getValue (x: obj) : string = jsNative
@@ -12,8 +12,11 @@ let getValue (x: obj) : string = jsNative
 [<Emit("$0.setValue($1, -1)")>]
 let setValue (x: obj) (y: string) : unit = jsNative
 
+let stringify (x) =
+    Fable.Core.JS.JSON.stringify x
+
 let sampleZero = "<Book Title='Lord of the Rings' Pages=500 ISBN=\"263468624687\" />"
-let sampleOne = 
+let sampleOne =
     """<Person>
     <Id>20</Id>
     <FirstName>John</FirstName>
@@ -21,7 +24,7 @@ let sampleOne =
     <Married>true</Married>
 </Person>
     """
-let sampleTwo = 
+let sampleTwo =
     """<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -36,7 +39,7 @@ let sampleTwo =
 </Project>
     """
 
-let sampleThree = 
+let sampleThree =
     """<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>A library for easily working with Xml in Fable projects</Description>
@@ -62,7 +65,7 @@ let sampleThree =
 </Project>
     """
 
-let sampleFour = 
+let sampleFour =
     """<?xml version="1.0" encoding="UTF-8"?>
 <breakfast_menu>
   <food>
@@ -120,41 +123,41 @@ let input : obj = jsNative
 let output : obj = jsNative
 
 
-zero.addEventListener("click", unbox (fun ev -> 
-   setValue input sampleZero)) 
+zero.addEventListener("click", unbox (fun ev ->
+   setValue input sampleZero))
 
-one.addEventListener("click", unbox (fun ev -> 
-   setValue input sampleOne)) 
+one.addEventListener("click", unbox (fun ev ->
+   setValue input sampleOne))
 
-two.addEventListener("click", unbox (fun ev -> 
-   setValue input sampleTwo)) 
- 
-three.addEventListener("click", unbox (fun ev -> 
-   setValue input sampleThree)) 
+two.addEventListener("click", unbox (fun ev ->
+   setValue input sampleTwo))
 
-four.addEventListener("click", unbox (fun ev -> 
-   setValue input sampleFour)) 
+three.addEventListener("click", unbox (fun ev ->
+   setValue input sampleThree))
 
-parseElem.addEventListener("click", unbox (fun ev -> 
-   match SimpleXml.tryParseElement (getValue input) with 
-   | Some el -> setValue output (beautify (Json.stringify el))
+four.addEventListener("click", unbox (fun ev ->
+   setValue input sampleFour))
+
+parseElem.addEventListener("click", unbox (fun ev ->
+   match SimpleXml.tryParseElement (getValue input) with
+   | Some el -> setValue output (beautify (stringify el))
    | None -> setValue output "Could not parse input XML as an element, if there is a declaration element <?xml ... ?>, then try parsing as a document"
 ))
 
-parseDoc.addEventListener("click", unbox (fun ev -> 
-   match SimpleXml.tryParseDocument (getValue input) with 
-   | Some el -> setValue output (beautify (Json.stringify el))
+parseDoc.addEventListener("click", unbox (fun ev ->
+   match SimpleXml.tryParseDocument (getValue input) with
+   | Some el -> setValue output (beautify (stringify el))
    | None -> setValue output "Could not parse input XML as a document"
 ))
 
-parseElemNonStrict.addEventListener("click", unbox (fun _ -> 
-   match SimpleXml.tryParseElementNonStrict (getValue input) with 
-   | Some el -> setValue output (beautify (Json.stringify el))
+parseElemNonStrict.addEventListener("click", unbox (fun _ ->
+   match SimpleXml.tryParseElementNonStrict (getValue input) with
+   | Some el -> setValue output (beautify (stringify el))
    | None -> setValue output "Could not parse input XML as an element, if there is a declaration element <?xml ... ?>, then try parsing as a document"
 ))
 
-parseDocNonStrict.addEventListener("click", unbox (fun _ -> 
-   match SimpleXml.tryParseDocumentNonStrict (getValue input) with 
-   | Some el -> setValue output (beautify (Json.stringify el))
+parseDocNonStrict.addEventListener("click", unbox (fun _ ->
+   match SimpleXml.tryParseDocumentNonStrict (getValue input) with
+   | Some el -> setValue output (beautify (stringify el))
    | None -> setValue output "Could not parse input XML as a document"
 ))
