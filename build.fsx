@@ -90,12 +90,12 @@ let publish projectPath = fun () ->
 Target "PublishNuget" (publish libPath)
 
 Target "CompileFableTestProject" <| fun _ ->
+    run dotnetCli "tool restore" __SOURCE_DIRECTORY__
     run "npm" "run build" "."
 
 Target "RunTests" <| fun _ ->
     printfn "Building %s with Fable" testsPath
     printfn "Using QUnit cli to run the tests"
-    run dotnetCli "tool restore" __SOURCE_DIRECTORY__
     run "npm" "run test" "."
     cleanBundles()
 
