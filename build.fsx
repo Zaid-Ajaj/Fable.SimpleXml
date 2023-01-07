@@ -31,22 +31,22 @@ let run fileName args workingDir =
              info.Arguments <- args) TimeSpan.MaxValue
     if not ok then failwith (sprintf "'%s> %s %s' task failed" workingDir fileName args)
 
-let delete file = 
-    if File.Exists(file) 
+let delete file =
+    if File.Exists(file)
     then DeleteFile file
-    else () 
+    else ()
 
-let cleanBundles() = 
-    Path.Combine("public", "bundle.js") 
-        |> Path.GetFullPath 
-        |> delete
-    Path.Combine("public", "bundle.js.map") 
+let cleanBundles() =
+    Path.Combine("public", "bundle.js")
         |> Path.GetFullPath
-        |> delete 
+        |> delete
+    Path.Combine("public", "bundle.js.map")
+        |> Path.GetFullPath
+        |> delete
 
 Target "Clean" <| fun _ ->
-    [ testsPath </> "bin" 
-      testsPath </> "obj" 
+    [ testsPath </> "bin"
+      testsPath </> "obj"
       libPath </> "bin"
       libPath </> "obj"
       samplePath </> "obj"
@@ -79,9 +79,9 @@ let publish projectPath = fun () ->
         match environVarOrNone "NUGET_KEY" with
         | Some nugetKey -> nugetKey
         | None -> failwith "The Nuget API key must be set in a NUGET_KEY environmental variable"
-    let nupkg = 
-        Directory.GetFiles(projectPath </> "bin" </> "Release") 
-        |> Seq.head 
+    let nupkg =
+        Directory.GetFiles(projectPath </> "bin" </> "Release")
+        |> Seq.head
         |> Path.GetFullPath
 
     let pushCmd = sprintf "nuget push %s -s nuget.org -k %s" nupkg nugetKey
@@ -95,22 +95,23 @@ Target "CompileFableTestProject" <| fun _ ->
 Target "RunTests" <| fun _ ->
     printfn "Building %s with Fable" testsPath
     printfn "Using QUnit cli to run the tests"
+    run dotnetCli "tool restore" __SOURCE_DIRECTORY__
     run "npm" "run test" "."
     cleanBundles()
 
-Target "RunSample" <| fun _ -> 
+Target "RunSample" <| fun _ ->
     run "npm" "run sample" "."
 
-Target "CompileSample" <| fun _ -> 
+Target "CompileSample" <| fun _ ->
     run "npm" "run build-sample" "."
 
 "Clean"
   ==> "InstallNpmPackages"
-  ==> "RunSample" 
+  ==> "RunSample"
 
 "Clean"
   ==> "InstallNpmPackages"
-  ==> "CompileSample" 
+  ==> "CompileSample"
 
 "Clean"
   ==> "InstallNpmPackages"
