@@ -13,7 +13,7 @@ cache:
 # Install scripts. (runs after repo cloning)
 install:
   # install latest dotnet core 3 preview
-  - cmd: choco install dotnetcore-sdk --pre
+  - cmd: choco install dotnet-6.0-sdk
   # Get the latest stable version of Node.js
   - ps: Install-Product node $env:nodejs_version
   # # Update npm
@@ -21,7 +21,7 @@ install:
   # # See https://github.com/npm/npm/issues/18380
   # - npm install -g npm@6.1.0
 
-os: Visual Studio 2017
+os: Visual Studio 2022
 
 build_script:
   - cmd: build.cmd RunTests
