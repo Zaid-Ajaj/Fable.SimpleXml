@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "dotnet fable src --run webpack --mode production",
+    "build": "dotnet fable ./test --run webpack --mode production",
     "start": "dotnet fable watch ./test --run webpack serve",
     "sample": "dotnet fable watch ./sample --run webpack serve --config webpack.sample.js",
     "build-sample": "dotnet fable src --run webpack --mode production --config webpack.sample.js",
