@@ -108,11 +108,47 @@ module Parser =
         |> Parsimmon.many
         |> Parsimmon.concat
 
-    let identifier =
+    // From https://www.w3.org/TR/xml/#NT-NameStartChar
+    //
+    // NameStartChar ::= ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] |
+    //                  [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] |
+    //                  [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] |
+    //                  [#x10000-#xEFFFF]
+    //
+    // Note:
+    // 1. Namespace char ":" is parsed separately in this parser
+    // 2. We (currently) aren't parsing the allowed extended Unicode characters such as 'À' (#xC0)
+    //
+    let tagCharFirst =
+       [ Parsimmon.letter
+         Parsimmon.str "_"]
+       |> Parsimmon.choose
+
+    // https://www.w3.org/TR/xml/#NT-NameChar
+    //
+    // NameChar ::== NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
+    //
+    // See Note for tagCharFirst
+    //
+    let tagCharAny =
+       [ tagCharFirst
+         Parsimmon.digit
+         Parsimmon.str "-"
+         Parsimmon.str "." ]
+       |> Parsimmon.choose
+
+    let tagCharsAny =
+        tagCharAny
+        |> Parsimmon.many
+        |> Parsimmon.concat
+
+    // tag name without namespace separator ':'
+    let simpleTag =
         Parsimmon.seq2
-            letters
-            integer
+            tagCharFirst
+            tagCharsAny
         |> Parsimmon.map Tuple.concat
+
     let attributeValue =
         [ escapedStringTick
           escapedString
@@ -133,8 +169,6 @@ module Parser =
         |> Parsimmon.seperateBy Parsimmon.whitespace
         |> withWhitespace
         |> Parsimmon.map List.ofArray
-
-    let simpleTag = Parsimmon.choose [ identifier; letters  ]
 
     let tagWithoutNamespace : IParser<string option * string> =
         simpleTag
@@ -169,7 +203,7 @@ module Parser =
         |> Parsimmon.map (fun (tagName, attrs, _) -> tagName, attrs)
 
     let textSnippet =
-        Parsimmon.satisfy (fun token -> token <> "<" && token <> ">")
+        Parsimmon.satisfy (fun token -> token <> "<" (*&& token <> ">"*)) // Issue #46: Allow '>'
         |> Parsimmon.atLeastOneOrMany
         |> Parsimmon.concat
 

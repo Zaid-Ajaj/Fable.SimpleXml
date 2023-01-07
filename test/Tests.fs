@@ -13,6 +13,25 @@ registerModule "SimpleXml Tests"
 let parseUsing p input =
     Parsimmon.parse input p
 
+// Issue #042
+testCase "Parsing tag with letter-digit-letter format tag name" <| fun test ->
+    "<A1A></A1A>"
+    |> parseUsing xmlElement
+    |> function
+        | None -> test.failwith "No match"
+        | Some el ->
+            test.equal "A1A" el.Name
+
+// Issue #046
+testCase "Parsing bare '>' in text" <| fun test ->
+    let text = "let inc = fun x -> x + 1"
+    text
+    |> parseUsing textNode
+    |> function
+        | None -> test.failwith "No match"
+        | Some el ->
+            test.equal text el.Content
+
 testCase "Parsing attributes" <| fun test ->
     ["height=\"12px\"";
      "width=\"15px\"";
@@ -93,8 +112,28 @@ testCase "Parsing self-closing tag without attributes or whitespace works" <| fu
         | otherResult -> test.unexpected otherResult
 
 testCase "Identifier parser works" <| fun test ->
-    match parseUsing identifier "h12" with
+    match parseUsing simpleTag "h12" with
     | Some "h12" -> test.pass()
+    | otherResult -> test.unexpected otherResult
+
+testCase "Identifier parser works (2)" <| fun test ->
+    match parseUsing simpleTag "h12-" with
+    | Some "h12-" -> test.pass()
+    | otherResult -> test.unexpected otherResult
+
+testCase "Identifier parser works (3)" <| fun test ->
+    match parseUsing simpleTag "_" with
+    | Some "_" -> test.pass()
+    | otherResult -> test.unexpected otherResult
+
+testCase "Identifier parser works (4)" <| fun test ->
+    match parseUsing simpleTag "_1" with
+    | Some "_1" -> test.pass()
+    | otherResult -> test.unexpected otherResult
+
+testCase "Identifier parser works (5)" <| fun test ->
+    match parseUsing simpleTag "_ab12.cd34_-" with
+    | Some "_ab12.cd34_-" -> test.pass()
     | otherResult -> test.unexpected otherResult
 
 testCase "Tag name parser works" <| fun test ->
@@ -660,10 +699,10 @@ testCase "Generater outputs valid Xml with attributes" <| fun test ->
     let xml = serializeXml people
 
     match SimpleXml.tryParseElementNonStrict xml with
-    | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc))
+    | Some doc -> test.passWith (sprintf "%s\n%A" xml doc)
     | None -> test.failwith xml
 
-testCase "Generater outputs valid Xml with attributes" <| fun test ->
+testCase "Generater outputs valid Xml with attributes (2)" <| fun test ->
     let people =
         node "people" [ attr.value("leafs", true) ] [
             leaf "person" [
@@ -682,7 +721,7 @@ testCase "Generater outputs valid Xml with attributes" <| fun test ->
     let xml = serializeXml people
 
     match SimpleXml.tryParseElementNonStrict xml with
-    | Some doc -> test.passWith (sprintf "%s\n%s" xml (SimpleJson.SimpleJson.stringify doc))
+    | Some doc -> test.passWith (sprintf "%s\n%A" xml doc)
     | None -> test.failwith xml
 
 testCase "Generator can reverse XmlElement to xNodes and xmlString" <| fun test ->
@@ -691,19 +730,19 @@ testCase "Generator can reverse XmlElement to xNodes and xmlString" <| fun test 
 
     match xmlElement with
     | None -> test.failwith customXml
-    | Some xml -> 
+    | Some xml ->
         let xNodeElement = Generator.ofXmlElement xml
-        let xmlString = Generator.serializeXml xNodeElement 
+        let xmlString = Generator.serializeXml xNodeElement
         let isSame = if customXml = xmlString then Some xmlString else None
 
         match isSame with
         | None -> test.failwith xmlString
         | Some xmlString ->
             test.passWith (sprintf "%A" xmlString)
-    
+
 
 testCase "Generator can correctly apply text nodes" <| fun test ->
-    let customXml = 
+    let customXml =
         """<customXml>
             <Validation SwateVersion="0.1.4">
                 <TableValidation DateTime="2020-12-30 15:03" TableName="annotationTable" Userlist="" WorksheetName="Sheet1">
@@ -717,22 +756,22 @@ testCase "Generator can correctly apply text nodes" <| fun test ->
         </customXml>"""
 
     let xmlElement = SimpleXml.tryParseElement customXml
-    
+
     match xmlElement with
     | None -> test.failwith customXml
-    | Some xml -> 
+    | Some xml ->
         let xNodeElement = Generator.ofXmlElement xml
-        let xmlString = Generator.serializeXml xNodeElement 
+        let xmlString = Generator.serializeXml xNodeElement
         let isSame = if customXml = xmlString then Some xmlString else None
 
         match isSame with
-        /// This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
+        // This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
         | None -> test.failwith (sprintf "%s \n vs new \n %s" customXml xmlString)
         | Some xmlString ->
             test.passWith (sprintf "%A" xmlString)
 
 testCase "Generator can correctly apply Namespaces" <| fun test ->
-    let customXml = 
+    let customXml =
         """<customXml>
             <Validation SwateVersion="0.1.4">
                 <f:TableValidation DateTime="2020-12-30 15:03" TableName="annotationTable" Userlist="" WorksheetName="Sheet1">
@@ -746,22 +785,22 @@ testCase "Generator can correctly apply Namespaces" <| fun test ->
         </customXml>"""
 
     let xmlElement = SimpleXml.tryParseElement customXml
-    
+
     match xmlElement with
     | None -> test.failwith customXml
-    | Some xml -> 
+    | Some xml ->
         let xNodeElement = Generator.ofXmlElement xml
-        let xmlString = Generator.serializeXml xNodeElement 
+        let xmlString = Generator.serializeXml xNodeElement
         let isSame = if customXml = xmlString then Some xmlString else None
 
         match isSame with
-        /// This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
+        // This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
         | None -> test.failwith (sprintf "%s \n vs new \n %s" customXml xmlString)
         | Some xmlString ->
             test.passWith (sprintf "%A" xmlString)
 
 testCase "Generator can correctly apply Comments" <| fun test ->
-    let customXml = 
+    let customXml =
         """<customXml>
             <!--- This is just a test comment--->
             <Validation SwateVersion="0.1.4">
@@ -777,16 +816,16 @@ testCase "Generator can correctly apply Comments" <| fun test ->
         </customXml>"""
 
     let xmlElement = SimpleXml.tryParseElement customXml
-    
+
     match xmlElement with
     | None -> test.failwith customXml
-    | Some xml -> 
+    | Some xml ->
         let xNodeElement = Generator.ofXmlElement xml
-        let xmlString = Generator.serializeXml xNodeElement 
+        let xmlString = Generator.serializeXml xNodeElement
         let isSame = if customXml = xmlString then Some xmlString else None
 
         match isSame with
-        /// This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
+        // This output heavily relies on the correct formatting of the string. E.g. if the intendation of 'customXml' changes it is likely to fail.
         | None -> test.failwith (sprintf "%s \n vs new \n %s" customXml xmlString)
         | Some xmlString ->
             test.passWith (sprintf "%A" xmlString)

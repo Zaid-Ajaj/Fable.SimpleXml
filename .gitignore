@@ -197,3 +197,5 @@ project.lock.json
 bundle.js
 bundle.js.map
 .ionide
+.vscode
+*.fs.js
