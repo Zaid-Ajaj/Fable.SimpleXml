@@ -2,9 +2,9 @@
   "private": true,
   "scripts": {
     "build": "dotnet fable src --run webpack --mode production",
-    "start": "dotnet fable watch ./test --run webpack serve --config webpack.config.test.js",
+    "start": "dotnet fable watch ./test --run webpack serve",
     "sample": "dotnet fable watch ./sample --run webpack serve --config webpack.sample.js",
-    "build-sample": "webpack -p --config webpack.sample.js",
+    "build-sample": "dotnet fable src --run webpack --mode production --config webpack.sample.js",
     "test": "node ./node_modules/qunitjs/bin/qunit public/bundle.js"
   },
   "repository": {

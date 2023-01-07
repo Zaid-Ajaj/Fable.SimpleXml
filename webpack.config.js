@@ -1,24 +1,13 @@
 var path = require("path");
 
-
-module.exports = function (evn, argv) {
-  var mode = argv.mode || "development";
-  var isProduction = mode === "production";
-  console.log("Webpack mode: " + mode);
-
-  return {
-   mode: mode,
-   devtool: isProduction ? false : "eval-source-map",
-   entry: './src/SimpleXml.fs.js',
-   output: {
-     filename: 'bundle.js',
-     path: path.join(__dirname, './public'),
-   },
-   devServer: {
-     contentBase: './public',
-     port: 8080
-   },
-   module: {
-   }
-  };
- }
+module.exports = {
+    entry: "./test/Tests.fs.js",
+    output: {
+        path: path.join(__dirname, "./public"),
+        filename: "bundle.js",
+    },
+    devServer: {
+        contentBase: "./public",
+        port: 8080,
+    },
+}
